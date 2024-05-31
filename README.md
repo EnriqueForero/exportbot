@@ -81,4 +81,5 @@ Las contribuciones son bienvenidas. Si encuentras algún problema o tienes algun
 
 ## 📄 Fuente
 
-La programación de este proyecto fue tomada de https://quickstarts.snowflake.com/guide/frosty_llm_chatbot_on_streamlit_snowflake/#0
+La programación inicial de este proyecto fue tomada de https://quickstarts.snowflake.com/guide/frosty_llm_chatbot_on_streamlit_snowflake/#0 
+Aquí se hicieron modificaciones para cambiar las bases de datos a utilizar y el enfoque. 
