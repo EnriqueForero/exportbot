@@ -79,6 +79,6 @@ streamlit run frosty_app.py
 
 Las contribuciones son bienvenidas. Si encuentras algún problema o tienes alguna sugerencia de mejora, por favor, abre un issue o envía un pull request.
 
-## 📄 Licencia
+## 📄 Fuente
 
-Este proyecto está licenciado bajo la [Licencia MIT](LICENSE).
+La programación de este proyecto fue tomada de https://quickstarts.snowflake.com/guide/frosty_llm_chatbot_on_streamlit_snowflake/#0
