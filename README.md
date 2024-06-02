@@ -72,6 +72,7 @@ streamlit run frosty_app.py
 
 - `frosty_app.py`: Archivo principal de la aplicación web ExportBot.
 - `prompts.py`: Configuración y generación del mensaje del sistema para ExportBot.
+- `funciones.py`: funciones para darle formato al documento en word a exportar.
 - `README.md`: Documentación del proyecto.
 - `requirements.txt`: Lista de dependencias del proyecto.
 
