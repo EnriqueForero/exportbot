@@ -26,9 +26,24 @@ HEADING1_STYLE_NAME = 'MyHeading1'
 HEADING2_STYLE_NAME = 'MyHeading2'
 TABLE_STYLE_NAME = 'MyTableStyle'
 NORMAL_STYLE_NAME = 'Normal'
+
+from PIL import Image
 ########################################
 
 st.title("🤖 ExportBot 🌎")  # Establece el título de la aplicación web.
+
+# Carga las imágenes de los logos
+logo_mincit = Image.open("LogoMinCIT.png")
+logo_procolombia = Image.open("LogoProColombia.png")
+
+# Crea dos columnas para los logos
+col1, col2 = st.columns(2)
+
+# Muestra los logos en las columnas correspondientes
+with col1:
+    st.image(logo_mincit, width=200)
+with col2:
+    st.image(logo_procolombia, width=200)
 
 # Se inicializa el historial de mensajes del chat. Se crea un cliente de OpenAI utilizando la clave API 
 # almacenada en los secretos de Streamlit. Si "messages" no está en el estado de la sesión, se inicializa 
