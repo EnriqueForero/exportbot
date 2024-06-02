@@ -52,6 +52,8 @@ with col2:
 ########################################
 from funciones import estilos, formato_tablas, formatear_numero
 
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+
 def to_word(df, prompt):
     """
     Genera un documento de Word con los resultados del chat.
@@ -65,6 +67,30 @@ def to_word(df, prompt):
     """
     # Crea un nuevo documento de Word
     doc = Document()
+
+    # Agrega una tabla de 1 fila y 2 columnas para los logos
+    logo_table = doc.add_table(rows=1, cols=2)
+    logo_table.autofit = False
+    logo_table.allow_autofit = False
+    logo_table.columns[0].width = Inches(3)
+    logo_table.columns[1].width = Inches(3)
+    
+    # Inserta el logo de MinCIT en la primera celda
+    logo_mincit_path = "LogoMinCIT.png"
+    logo_mincit_cell = logo_table.rows[0].cells[0]
+    logo_mincit_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
+    logo_mincit_run = logo_mincit_cell.paragraphs[0].add_run()
+    logo_mincit_run.add_picture(logo_mincit_path, width=Inches(1.5))
+    
+    # Inserta el logo de ProColombia en la segunda celda
+    logo_procolombia_path = "LogoProColombia.png"
+    logo_procolombia_cell = logo_table.rows[0].cells[1]
+    logo_procolombia_cell.paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    logo_procolombia_run = logo_procolombia_cell.paragraphs[0].add_run()
+    logo_procolombia_run.add_picture(logo_procolombia_path, width=Inches(1.5))
+    
+    # Agrega un salto de párrafo después de la tabla de logos
+    doc.add_paragraph()
 
     # Aplica estilos al documento
     estilos(doc)
