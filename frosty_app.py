@@ -10,12 +10,98 @@ from openai import OpenAI  # Importa la biblioteca OpenAI para interactuar con m
 import re  # Importa el módulo re para trabajar con expresiones regulares.
 import streamlit as st  # Importa la biblioteca Streamlit para crear aplicaciones web interactivas.
 from prompts import get_system_prompt  # Importa una función personalizada para obtener el mensaje del sistema.
+import io
+import pandas as pd
+
+########################################
+from docx import Document
+from docx.shared import Inches
+from io import BytesIO
+from funciones import estilos, formato_tablas, formatear_numero
+from docx.shared import Pt
+
+# Definir nombres de estilo como constantes
+TITLE_STYLE_NAME = 'MyTitleStyle'
+HEADING1_STYLE_NAME = 'MyHeading1'
+HEADING2_STYLE_NAME = 'MyHeading2'
+TABLE_STYLE_NAME = 'MyTableStyle'
+NORMAL_STYLE_NAME = 'Normal'
+########################################
 
 st.title("🤖 ExportBot 🌎")  # Establece el título de la aplicación web.
 
 # Se inicializa el historial de mensajes del chat. Se crea un cliente de OpenAI utilizando la clave API 
 # almacenada en los secretos de Streamlit. Si "messages" no está en el estado de la sesión, se inicializa 
 # con el mensaje del sistema obtenido de la función get_system_prompt().
+
+########################################
+from funciones import estilos, formato_tablas, formatear_numero
+
+def to_word(df, prompt):
+    """
+    Genera un documento de Word con los resultados del chat.
+
+    Args:
+        df (pandas.DataFrame): DataFrame con los resultados del chat.
+        prompt (str): Prompt utilizado para la consulta.
+
+    Returns:
+        BytesIO: Buffer de memoria que contiene el documento de Word generado.
+    """
+    # Crea un nuevo documento de Word
+    doc = Document()
+
+    # Aplica estilos al documento
+    estilos(doc)
+
+    # Agrega un título al documento
+    titulo = doc.add_heading('Resultados del Chat', level=0)
+    titulo.style = TITLE_STYLE_NAME
+
+    # Agrega el prompt como un párrafo
+    prompt_text = f"Prompt: {prompt}"
+    prompt_paragraph = doc.add_paragraph(prompt_text)
+    prompt_paragraph.style = NORMAL_STYLE_NAME
+
+    # Agrega una tabla al documento
+    table = doc.add_table(rows=df.shape[0]+1, cols=df.shape[1])
+
+    # Agrega los encabezados de la tabla
+    for j in range(df.shape[1]):
+        cell = table.cell(0, j)
+        cell.text = str(df.columns[j])
+        cell.paragraphs[0].runs[0].bold = True
+
+    # Agrega los datos de la tabla
+    for i in range(df.shape[0]):
+        for j in range(df.shape[1]):
+            cell = table.cell(i+1, j)
+            cell.text = formatear_numero(df.iloc[i, j])
+
+    # Formatea la tabla
+    formato_tablas(doc, table)
+
+    # Ajusta el espaciado antes y después de la tabla
+    table.rows[0].cells[0].paragraphs[0].paragraph_format.space_before = Pt(12)
+    table.rows[-1].cells[0].paragraphs[0].paragraph_format.space_after = Pt(12)
+
+    # Agrega la advertencia como un párrafo al final del documento
+    advertencia = """
+    
+    Advertencia: Revisar los resultados cuidadosamente. La información generada por IA puede contener errores.
+    
+    La información contenida en este documento es de orientación y guía general. En ningún caso, ProColombia, ni sus empleados, son responsables ante usted o cualquier otra persona por las decisiones o acciones que pueda tomar en relación con la información proporcionada, por lo cual debe tomarse como de carácter referencial únicamente.
+    """
+    advertencia_paragraph = doc.add_paragraph(advertencia)
+    advertencia_paragraph.style = NORMAL_STYLE_NAME
+
+    # Guarda el documento en un buffer de memoria
+    buffer = BytesIO()
+    doc.save(buffer)
+    buffer.seek(0)
+
+    return buffer
+########################################
 
 # Inicializa el historial de mensajes del chat.
 client = OpenAI(api_key=st.secrets.OPENAI_API_KEY)  # Crea un cliente de OpenAI utilizando la clave API almacenada en los secretos de Streamlit.
@@ -43,6 +129,10 @@ for message in st.session_state.messages:  # Itera sobre cada mensaje en el hist
         st.write(message["content"])  # Escribe el contenido del mensaje en la aplicación web.
         if "results" in message:  # Si el mensaje contiene resultados de una consulta SQL.
             st.dataframe(message["results"])  # Muestra los resultados en un DataFrame.
+    
+####################################
+
+####################################
 
 # Si el último mensaje no es del asistente, se genera una nueva respuesta. Se crea un contenedor vacío para
 # actualizar dinámicamente la respuesta. Se llama a la API de OpenAI para generar una respuesta en 
@@ -75,3 +165,12 @@ if st.session_state.messages[-1]["role"] != "assistant":  # Verifica si el últi
             message["results"] = conn.query(sql)  # Ejecuta la consulta SQL y guarda los resultados.
             st.dataframe(message["results"])  # Muestra los resultados en un DataFrame.
         st.session_state.messages.append(message)  # Agrega el mensaje del asistente al historial de mensajes.
+
+        # Agrega el botón de exportación después de la respuesta
+        if "results" in message:
+            export_button = st.download_button(
+                label="Descargar archivo Word",
+                data=to_word(message["results"], prompt),
+                file_name="resultados.docx",
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            )

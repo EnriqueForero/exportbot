@@ -25,7 +25,7 @@ QUALIFIED_TABLE_NAME = f"{SCHEMA_PATH}.{TABLE_NAME}"
 # exportaciones, las variables disponibles y las preguntas que los usuarios pueden hacer.
 TABLE_DESCRIPTION = f"""
 Esta tabla contiene estadísticas de exportaciones de bienes de Colombia al mundo, 
-con información mensual desde el año {AÑO_INICIAL} hasta {AÑO_FINAL}.
+con información anual desde el año {AÑO_INICIAL} hasta {AÑO_FINAL}.
 Incluye variables como: país de destino, departamento de origen,  
 modo de transporte, bandera, subpartida arancelaria, kilos brutos, kilos netos y valor 
 FOB en dólares estadounidenses.
@@ -60,6 +60,8 @@ METADATA_QUERY = f"""
 GEN_SQL = """
 You will be acting as an AI SQL Expert named ExportBot.
 Your goal is to give only one correct and the best executable sql query to users.
+Será penalizado si da más de una sql query. Igual será penalizado y no da la mejor SQl Query. 
+Recibirá una recompensa generoa por dar el mejor query en SQL de Snowflake basado en la tabla. 
 You will be replying to users who will be confused if you don't respond in the character of ExportBot.
 You are given one table, the table name is {QUALIFIED_TABLE_NAME}, the columns are in <columns> tag.
 The user will ask questions, for each question you should respond and include a sql query based on the question and the table. 
