@@ -114,7 +114,7 @@ function TarjetaRespuesta({ turno, onFeedback, onSugerencia }: TarjetaProps) {
           <div className="resultado-card__meta">
             {final.meta.proveedor}
             {final.meta.modelo ? ` · ${final.meta.modelo}` : ""}
-            {final.meta.intentos > 1 ? " · SQL autocorregida" : ""}
+            {final.meta.intentos > 1 ? ` · SQL autocorregida (${final.meta.intentos} intentos)` : ""}
           </div>
         </div>
       </header>
@@ -155,7 +155,7 @@ function TarjetaRespuesta({ turno, onFeedback, onSugerencia }: TarjetaProps) {
             </>
           )}
         </div>
-        <div className="feedback" aria-label="Calificar respuesta">
+        <div className="feedback" aria-label="Calificar respuesta" title="La calificación alimenta la auditoría de calidad.">
           <span>¿Fue útil?</span>
           <button
             className={turno.feedback === true ? "feedback__boton feedback__boton--activo" : "feedback__boton"}

@@ -1,0 +1,596 @@
+{
+  "schema_version": 1,
+  "application_version": "2.0.0b2",
+  "paths": {
+    "/api/salud": {
+      "get": {
+        "tags": [
+          "salud"
+        ],
+        "summary": "Salud",
+        "description": "Estado de la app: versión, modo de autenticación y subsistemas.",
+        "operationId": "salud_api_salud_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Salud Api Salud Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/proveedores": {
+      "get": {
+        "summary": "Proveedores",
+        "description": "Proveedores de redacción y su disponibilidad (claves solo en servidor).",
+        "operationId": "proveedores_api_proveedores_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Proveedores Api Proveedores Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat": {
+      "post": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Chat",
+        "description": "Procesa la pregunta y transmite los eventos del orquestador como SSE.",
+        "operationId": "chat_api_chat_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreguntaEntrada"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/exportar/excel": {
+      "post": {
+        "tags": [
+          "exportar"
+        ],
+        "summary": "Exportar Excel",
+        "description": "Construye el Excel institucional del resultado y registra la descarga.",
+        "operationId": "exportar_excel_api_exportar_excel_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportEntrada"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/exportar/pptx": {
+      "post": {
+        "tags": [
+          "exportar"
+        ],
+        "summary": "Exportar Pptx",
+        "description": "Construye la presentación institucional del resultado y registra la descarga.",
+        "operationId": "exportar_pptx_api_exportar_pptx_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportEntrada"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/track/feedback": {
+      "post": {
+        "tags": [
+          "track"
+        ],
+        "summary": "Feedback",
+        "description": "Registra el pulgar arriba/abajo (insumo directo de calidad).",
+        "operationId": "feedback_api_track_feedback_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackEntrada"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Feedback Api Track Feedback Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/metricas/resumen": {
+      "get": {
+        "tags": [
+          "metricas"
+        ],
+        "summary": "Resumen",
+        "description": "KPIs de los últimos 30 días: volumen, éxito, latencias y feedback.",
+        "operationId": "resumen_api_metricas_resumen_get",
+        "parameters": [
+          {
+            "name": "x-admin-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Admin-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Resumen Api Metricas Resumen Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/metricas/series": {
+      "get": {
+        "tags": [
+          "metricas"
+        ],
+        "summary": "Series",
+        "description": "Serie diaria de consultas y tasa de éxito (V_CONSULTAS_DIARIAS).",
+        "operationId": "series_api_metricas_series_get",
+        "parameters": [
+          {
+            "name": "x-admin-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Admin-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Series Api Metricas Series Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/metricas/preguntas": {
+      "get": {
+        "tags": [
+          "metricas"
+        ],
+        "summary": "Preguntas",
+        "description": "Preguntas más frecuentes normalizadas (V_PREGUNTAS_TOP).",
+        "operationId": "preguntas_api_metricas_preguntas_get",
+        "parameters": [
+          {
+            "name": "x-admin-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Admin-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Preguntas Api Metricas Preguntas Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/metricas/feedback": {
+      "get": {
+        "tags": [
+          "metricas"
+        ],
+        "summary": "Ultimos Feedback",
+        "description": "Últimos comentarios de usuarios, con su pregunta asociada.",
+        "operationId": "ultimos_feedback_api_metricas_feedback_get",
+        "parameters": [
+          {
+            "name": "x-admin-token",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "X-Admin-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Ultimos Feedback Api Metricas Feedback Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EventoEntrada": {
+        "properties": {
+          "evento": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Evento"
+          },
+          "detalles": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Detalles"
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "evento"
+        ],
+        "title": "EventoEntrada",
+        "description": "Evento libre reportado por el frontend."
+      },
+      "ExportEntrada": {
+        "properties": {
+          "pregunta": {
+            "type": "string",
+            "title": "Pregunta",
+            "default": ""
+          },
+          "texto": {
+            "type": "string",
+            "title": "Texto",
+            "default": ""
+          },
+          "sql": {
+            "type": "string",
+            "title": "Sql",
+            "default": ""
+          },
+          "columnas": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Columnas"
+          },
+          "filas": {
+            "items": {
+              "items": {},
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Filas"
+          },
+          "chat_id": {
+            "type": "string",
+            "title": "Chat Id",
+            "default": ""
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "ExportEntrada",
+        "description": "Cuerpo de POST /api/exportar/{excel|pptx}: la tarjeta se exporta a sí misma."
+      },
+      "FeedbackEntrada": {
+        "properties": {
+          "chat_id": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 4,
+            "title": "Chat Id"
+          },
+          "util": {
+            "type": "boolean",
+            "title": "Util"
+          },
+          "comentario": {
+            "type": "string",
+            "maxLength": 1000,
+            "title": "Comentario",
+            "default": ""
+          },
+          "session_id": {
+            "type": "string",
+            "title": "Session Id",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "chat_id",
+          "util"
+        ],
+        "title": "FeedbackEntrada",
+        "description": "Pulgar arriba/abajo sobre una respuesta."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "PreguntaEntrada": {
+        "properties": {
+          "pregunta": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Pregunta"
+          },
+          "historial": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Historial"
+          },
+          "proveedor": {
+            "type": "string",
+            "title": "Proveedor",
+            "default": ""
+          },
+          "session_id": {
+            "type": "string",
+            "maxLength": 64,
+            "title": "Session Id",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "pregunta"
+        ],
+        "title": "PreguntaEntrada",
+        "description": "Cuerpo de POST /api/chat."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

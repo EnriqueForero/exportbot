@@ -1,9 +1,9 @@
 """Adapta las plantillas de notebooks del usuario a ExportBot 2.0 (v3).
 
 Regla de oro: SOLO se editan la Celda A, el encabezado y —desde v3, con
-diagnóstico A08— la función ``localizar_proyecto`` y la detección de ``dist``
+diagnóstico A08/A10— la función ``localizar_proyecto`` y la detección de ``dist``
 de la Celda B, que asumían frontend plano (package.json y dist/ en la raíz)
-y fallaban con "0 candidatos" ante un monorepo. Cada celda parchada se
+y fallaban con "0 candidatos" ante un monorepo. A10 añade aislamiento de imports en los gates de Colab. Cada celda parchada se
 valida con ``ast.parse`` antes de escribirse.
 """
 
@@ -203,6 +203,77 @@ def _parchear_localizar(nb: dict, nueva_funcion: str) -> None:
     _poner_src(celda, s)
 
 
+def _parchear_aislamiento_gates(nb: dict) -> None:
+    """Aísla imports y provisiona Chromium para los gates de Colab (A11)."""
+    celda = _celda_con(nb, "def correr_gates")
+    s = _src(celda)
+
+    firma_vieja = (
+        "def _run(cmd, cwd=None, check: bool = True, secreto: str | None = None,\n"
+        "         timeout_s: int = TIMEOUT_CMD_S) -> subprocess.CompletedProcess:"
+    )
+    firma_nueva = (
+        "def _run(cmd, cwd=None, check: bool = True, secreto: str | None = None,\n"
+        "         timeout_s: int = TIMEOUT_CMD_S,\n"
+        "         env: dict[str, str] | None = None) -> subprocess.CompletedProcess:"
+    )
+    if firma_vieja not in s:
+        raise SystemExit("No se encontró la firma de _run para aplicar A11")
+    s = s.replace(firma_vieja, firma_nueva, 1)
+
+    llamada_vieja = "capture_output=True, timeout=timeout_s)"
+    llamada_nueva = "capture_output=True, timeout=timeout_s, env=env)"
+    if llamada_vieja not in s:
+        raise SystemExit("No se encontró subprocess.run para aplicar A11")
+    s = s.replace(llamada_vieja, llamada_nueva, 1)
+
+    inicio = s.find("    # Fail-fast de empaquetado: distribución y módulos reales deben ser visibles.")
+    fin_marca = "            r = _run(cmd, cwd=GATESRC, timeout_s=TIMEOUT_GATE_S)\n"
+    fin = s.find(fin_marca, inicio)
+    if inicio < 0 or fin < 0:
+        raise SystemExit("No se encontró el bloque de gates para aplicar A11")
+    fin += len(fin_marca)
+    bloque_nuevo = (
+        "    # Aislamiento reproducible de imports dentro del stage.\n"
+        "    gate_env = os.environ.copy()\n"
+        '    rutas_python = [str(GATESRC / "backend"), str(GATESRC)]\n'
+        '    if gate_env.get("PYTHONPATH"):\n'
+        '        rutas_python.append(gate_env["PYTHONPATH"])\n'
+        '    gate_env["PYTHONPATH"] = os.pathsep.join(rutas_python)\n'
+        '    gate_env["PYTHONNOUSERSITE"] = "1"\n\n'
+        "    # Provisionamiento reproducible de Chromium para E2E.\n"
+        "    if GATE_COMPLETO:\n"
+        '        cache_playwright = (Path("/content/.cache/ms-playwright")\n'
+        '                            if Path("/content").exists()\n'
+        '                            else Path.home() / ".cache/ms-playwright")\n'
+        '        gate_env["PLAYWRIGHT_BROWSERS_PATH"] = str(cache_playwright)\n'
+        '        navegador = _run([py, GATESRC / "scripts" / "playwright_runtime.py"],\n'
+        "                         cwd=GATESRC, timeout_s=TIMEOUT_GATE_S, env=gate_env)\n"
+        '        for linea in [ln for ln in (navegador.stdout or "").splitlines() if ln.strip()][-3:]:\n'
+        '            print("   ", linea[:180])\n\n'
+        "    # Fail-fast de empaquetado + contrato API sobre OpenAPI.\n"
+        '    diagnostico = _run([py, "-c",\n'
+        '          "from importlib.metadata import version; "\n'
+        "          \"assert version('exportbot'); \"\n"
+        '          "import config, main, orquestador, schemas; "\n'
+        "          \"paths=main.crear_app().openapi()['paths']; \"\n"
+        "          \"assert '/api/salud' in paths and '/api/chat' in paths; \"\n"
+        "          \"print('main=', main.__file__, 'rutas_api=', len([p for p in paths if p.startswith('/api/')]))\"],\n"
+        "         cwd=GATESRC, timeout_s=TIMEOUT_GATE_S, env=gate_env)\n"
+        '    for linea in [ln for ln in (diagnostico.stdout or "").splitlines() if ln.strip()][-2:]:\n'
+        '        print("   ", linea[:180])\n'
+        '    print(f"🐍 Venv de gates listo · {_cron(inicio)}")\n'
+        "    comandos = list(GATES_BASE) + (list(GATES_EXTRA) if GATE_COMPLETO else [])\n"
+        "    for plantilla in comandos:\n"
+        '        cmd = [p.format(venv=VENVPUB / "bin", proyecto=GATESRC) for p in plantilla]\n'
+        "        try:\n"
+        "            r = _run(cmd, cwd=GATESRC, timeout_s=TIMEOUT_GATE_S, env=gate_env)\n"
+    )
+    s = s[:inicio] + bloque_nuevo + s[fin:]
+    ast.parse(s)
+    _poner_src(celda, s)
+
+
 def adaptar_lanzar() -> None:
     nb = _leer("Lanzar_App_Colab_Cloudflare.ipynb")
     assert (
@@ -250,7 +321,9 @@ def adaptar_lanzar() -> None:
 
 def adaptar_publicar() -> None:
     nb = _leer("Publicar_GitHub.ipynb")
-    assert _parchear_encabezado(nb, "`github.com/EnriqueForero/exportbot` · v2.0.0b2 · A08: monorepos") == 1
+    assert (
+        _parchear_encabezado(nb, "`github.com/EnriqueForero/exportbot` · v2.0.0b2 · A11: Playwright reproducible") == 1
+    )
     celda = _celda_con(nb, "CELDA A — CONFIGURACIÓN")
     s = _src(celda)
     s = _sub(
@@ -265,6 +338,7 @@ def adaptar_publicar() -> None:
         re.S,
     )
     s = _sub(s, r'^RAMA_TRABAJO\s*=\s*"[^"]*"', 'RAMA_TRABAJO   = "v2-lanzamiento"', re.M)
+    s = _sub(s, r"^GATE_COMPLETO\s*=\s*(True|False).*", "GATE_COMPLETO = True    # lint + E2E + regresión visual", re.M)
     s = _sub(
         s,
         r'^MENSAJE_COMMIT\s*=\s*"[^"]*"',
@@ -274,23 +348,48 @@ def adaptar_publicar() -> None:
     s = _sub(
         s,
         r"GATES_BASE\s*=\s*\[.*?\n\]",
-        "GATES_BASE = [          # dependencias instaladas una sola vez en correr_gates\n"
-        '    ["{venv}/python", "-m", "pytest", "backend/tests", "-q", "--no-header"],\n'
+        "GATES_BASE = [          # gates contractuales y build, siempre obligatorios\n"
+        '    ["{venv}/python", "-m", "pytest", "backend/tests", "-m", "not e2e", "-q", "--no-header"],\n'
+        '    ["npm", "--prefix", "frontend", "ci", "--no-audit", "--no-fund"],\n'
+        '    ["npm", "--prefix", "frontend", "run", "build"],\n'
         "]",
         re.S,
     )
     s = _sub(
         s,
         r"GATES_EXTRA\s*=\s*\[.*?\n\]",
-        "GATES_EXTRA = [         # solo con GATE_COMPLETO=True\n"
+        "GATES_EXTRA = [         # calidad + navegador + línea base visual\n"
         '    ["{venv}/ruff", "check", "backend", "eval", "scripts"],\n'
         '    ["{venv}/ruff", "format", "--check", "backend", "eval", "scripts"],\n'
+        '    ["{venv}/python", "-m", "pytest", "backend/tests/test_frontend_e2e.py", "-q", "--no-header"],\n'
         "]",
         re.S,
     )
     ast.parse(s)
     _poner_src(celda, s)
     _parchear_localizar(nb, LOCALIZAR_PUBLICAR_V3)
+    _parchear_aislamiento_gates(nb)
+
+    # La validación estructural también protege los artefactos de regresión.
+    celda_pipeline = _celda_con(nb, "obligatorios = [")
+    ps = _src(celda_pipeline)
+    marcador = '".github/workflows/ci.yml", "README.md",'
+    ampliado = (
+        '".github/workflows/ci.yml", "README.md", "AGENTS.md",\n'
+        '        "contracts/exportbot_v2_contract.json", "contracts/openapi_v2_baseline.json",\n'
+        '        "docs/CONTRATO_DE_REGRESION.md",\n'
+        '        "scripts/verificar_regresiones.py",\n'
+        '        "scripts/playwright_runtime.py",\n'
+        '        "scripts/actualizar_contrato_openapi.py",\n'
+        '        "backend/tests/visual_baselines/exportbot_inicio.png",'
+        '        "backend/tests/visual_baselines/exportbot_resultado.png",'
+    )
+    if marcador not in ps:
+        raise SystemExit("No se encontró la lista de obligatorios de Publicar_GitHub")
+    ps = ps.replace(marcador, ampliado, 1)
+    ast.parse(ps)
+    _poner_src(celda_pipeline, ps)
+
     (DESTINO / "Publicar_GitHub.ipynb").write_text(json.dumps(nb, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"Publicar v3 OK · celdas: {len(nb['cells'])}")
 

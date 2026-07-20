@@ -1,8 +1,8 @@
 {
   "proyecto": "exportbot",
   "version": "2.0.0b2",
-  "generado_utc": "2026-07-20T02:01:02+00:00",
-  "n_archivos": 86,
+  "generado_utc": "2026-07-20T15:34:15+00:00",
+  "n_archivos": 101,
   "archivos": [
     {
       "ruta": ".env.example",
@@ -11,8 +11,8 @@
     },
     {
       "ruta": ".github/workflows/ci.yml",
-      "sha256": "fce98c19fb211fc5335348196b9888553624bc09601f45614d2581ee90afb680",
-      "bytes": 739
+      "sha256": "1b941eb3b6a84bd9cc0b1ed1686ed873e2c44fb8e3519c3dbee191bbd1f154ad",
+      "bytes": 1599
     },
     {
       "ruta": ".gitignore",
@@ -21,13 +21,18 @@
     },
     {
       "ruta": ".pre-commit-config.yaml",
-      "sha256": "e47c6deb0c75c33cda62d7f55c1ded80268e5dcf0ad805d22b0a762e31ad19e4",
-      "bytes": 350
+      "sha256": "a9a6b2afce96db97eff0d801ae1e1ff26b68e82b48ab4d88dc3b87286a98f364",
+      "bytes": 675
+    },
+    {
+      "ruta": "AGENTS.md",
+      "sha256": "115a16665755f6e1725c1177b9a4a275e000090bccf58778a3fd282344f5e9e9",
+      "bytes": 2786
     },
     {
       "ruta": "CHANGELOG.md",
-      "sha256": "13212675fbf306734248fd75ec3b8aa60befdbfda51f4c3a7a31d50e1b3e9660",
-      "bytes": 2899
+      "sha256": "b8fdfc5c8741df4c295e2352a610e09bc9e09fa54a687e268757d1e5ed790105",
+      "bytes": 4574
     },
     {
       "ruta": "Dockerfile",
@@ -36,8 +41,8 @@
     },
     {
       "ruta": "README.md",
-      "sha256": "4e4d801dd6522830a3e3fd84eee2dd6c21cb5002bd282472b93cd865498ea14c",
-      "bytes": 1936
+      "sha256": "3a3af50f881cda3e18b36e4e473408813db0c4aa198459b94ccb1d716f48bf93",
+      "bytes": 2584
     },
     {
       "ruta": "VERSION",
@@ -91,8 +96,8 @@
     },
     {
       "ruta": "backend/requirements-dev.txt",
-      "sha256": "a4329aced9ab1a8d861b260d323daf7194bad138470ee8d95ca13dc0bc264182",
-      "bytes": 34
+      "sha256": "b50cd70f5c8c532fbd4cb735bb2eb302611f9d5bcaa99a388daafd5c74383532",
+      "bytes": 64
     },
     {
       "ruta": "backend/requirements.txt",
@@ -180,14 +185,54 @@
       "bytes": 835
     },
     {
+      "ruta": "backend/tests/test_frontend_e2e.py",
+      "sha256": "415a62b999185bc4489c241297bc2e2c775f6c09a765620fcccfaf5b1cdc77a2",
+      "bytes": 15151
+    },
+    {
       "ruta": "backend/tests/test_guardas.py",
       "sha256": "c69e9c93e8052039cb786c29f2a4f86af7f994ff19012760ef1ab5f2e2e56f02",
       "bytes": 1808
     },
     {
       "ruta": "backend/tests/test_notebook_contracts.py",
-      "sha256": "994d3c9adc400b98c3374bc461ce8de8714bfc862f36329cc6d7db933f9b16b8",
-      "bytes": 1722
+      "sha256": "b9f99618e5a4c32938ce651d2d3f48da5b760c4d97f8b16c07043bc35036e721",
+      "bytes": 3479
+    },
+    {
+      "ruta": "backend/tests/test_playwright_runtime.py",
+      "sha256": "54cad04bc3e742beec584b6e445efdd625b94341e56dc522d4f79c4c4189dbe6",
+      "bytes": 1720
+    },
+    {
+      "ruta": "backend/tests/test_regression_contract.py",
+      "sha256": "8e4860f51d8ac0e3f662586099f8b7074953e83b86a0fce30557eb6d0ea26730",
+      "bytes": 3119
+    },
+    {
+      "ruta": "backend/tests/visual_baselines/exportbot_inicio.png",
+      "sha256": "705d821ca6f60982767c8553f9068b6ee617471ce777277b513baf64704f375e",
+      "bytes": 440819
+    },
+    {
+      "ruta": "backend/tests/visual_baselines/exportbot_resultado.png",
+      "sha256": "74ce9e2c242a956b856ccf6564ffe70ec469868801770f62481731af82401f9b",
+      "bytes": 484720
+    },
+    {
+      "ruta": "contracts/exportbot_v2_contract.json",
+      "sha256": "352ce848c4df47fb48ca4cad66731ac06f1a0ef07989b34f77b81f48ef3586ea",
+      "bytes": 4939
+    },
+    {
+      "ruta": "contracts/openapi_v2_baseline.json",
+      "sha256": "be0d2796d49ca90efefcfe5eff88fa91b9f79ae15821ead98c1a370632c22294",
+      "bytes": 15763
+    },
+    {
+      "ruta": "docs/CONTRATO_DE_REGRESION.md",
+      "sha256": "6c713c314ced1158a5f28fbeaaaade2114f417cf66abbe4f0582369befe9a5e8",
+      "bytes": 5031
     },
     {
       "ruta": "docs/DECISIONES.md",
@@ -221,8 +266,8 @@
     },
     {
       "ruta": "docs/PLAYBOOK_DESPLIEGUE.md",
-      "sha256": "486af609f49e9ff76270bd596b9f9e421902279eabeead778b63e3b04e8d6e77",
-      "bytes": 14721
+      "sha256": "493c0870b45ffcf081b3ed199f0e32c9bfb39764ffd1c6db4197ab49c84fe346",
+      "bytes": 14926
     },
     {
       "ruta": "docs/RUNBOOK.md",
@@ -235,9 +280,24 @@
       "bytes": 2182
     },
     {
+      "ruta": "docs/VERIFICACION_PUBLICACION_GITHUB_A05_2026-07-20.md",
+      "sha256": "cb84a9598af147af151eeddc50a5decd4c0b674fc88b5ac5663e69ee72dc181d",
+      "bytes": 1329
+    },
+    {
+      "ruta": "docs/VERIFICACION_PUBLICACION_GITHUB_A06_2026-07-20.md",
+      "sha256": "3f98cc6ea350b82690efa2b72df445933e822c89e8bd1935923a7e4412ceaaad",
+      "bytes": 4727
+    },
+    {
       "ruta": "docs/VERIFICACION_REDISENO_VISUAL_2026-07-19.md",
       "sha256": "4286a9d5ddbc135cd88fa5182a2ac637bcc080c825857547f02772f18e0b7918",
       "bytes": 2592
+    },
+    {
+      "ruta": "docs/VERIFICACION_REGRESIONES_Y_GUARDRAILS_2026-07-20.md",
+      "sha256": "4b276b5d31ab0d1ef432bbc6ae8c77e42857023e21815f2103d7052539261028",
+      "bytes": 10125
     },
     {
       "ruta": "eval/evaluar.py",
@@ -271,8 +331,8 @@
     },
     {
       "ruta": "frontend/src/App.tsx",
-      "sha256": "038dd9a6d42618ee1d7afe1ba93f344e9ae04439c5d4dc958f4d5505e5a3e4bc",
-      "bytes": 2719
+      "sha256": "9751cb197e5f594760b9ecd2813e66131e1c30ebe181acf1a898cf4a96b36c5b",
+      "bytes": 3057
     },
     {
       "ruta": "frontend/src/api/cliente.ts",
@@ -301,8 +361,8 @@
     },
     {
       "ruta": "frontend/src/pages/ChatPage.tsx",
-      "sha256": "c44d91efe89f41db6df3ccccef75a0566c442df30e5a7675977b06e45b91f5ab",
-      "bytes": 17885
+      "sha256": "f843f251d9a431acd81ddc341684b535a6efd2fb67a6d65aaf5998e6c4eff3dd",
+      "bytes": 17979
     },
     {
       "ruta": "frontend/src/pages/MetricasPage.tsx",
@@ -361,8 +421,8 @@
     },
     {
       "ruta": "notebooks/Publicar_GitHub.ipynb",
-      "sha256": "77071b80adfed5be2cb5f153488081803b41695fdf00a1e335f1de761a5e07ed",
-      "bytes": 55077
+      "sha256": "60634c55784b9947913334495b16c44f808dab8817c1c1987e466fd4b41d085c",
+      "bytes": 58042
     },
     {
       "ruta": "package-lock.json",
@@ -376,8 +436,8 @@
     },
     {
       "ruta": "pyproject.toml",
-      "sha256": "4519fc3f2328f9ff41535ad21337b3c22f14e8c688b59d8f1cda565ab889c895",
-      "bytes": 1273
+      "sha256": "3f21121ee5e38496e08446916283f4cdb17910ff64929f593034104803277723",
+      "bytes": 1399
     },
     {
       "ruta": "railway.toml",
@@ -385,14 +445,29 @@
       "bytes": 265
     },
     {
+      "ruta": "scripts/actualizar_contrato_openapi.py",
+      "sha256": "5cb8b53c8d1eaed3d100858f06e743edbe3b18ff7409b78fa0d7aa9739a4b3d5",
+      "bytes": 2519
+    },
+    {
       "ruta": "scripts/adaptar_notebooks.py",
-      "sha256": "263b6bc2585f701a0ea3c9f37ef31314bf9acac5569fa40c9a50fd5a7de117f1",
-      "bytes": 13372
+      "sha256": "d17162011b56131746f05f4f486222135abfd63e672e3bdd22c9c2ef62857bc4",
+      "bytes": 18866
     },
     {
       "ruta": "scripts/generar_manifiesto.py",
       "sha256": "ba6386a95309181e78ea270b2fe0026e89b57dafcb04faaa7e86db89559ff2bf",
       "bytes": 2160
+    },
+    {
+      "ruta": "scripts/playwright_runtime.py",
+      "sha256": "ba05530da65af942b31a010799a83dbec0910327bcf64c53cd3d0a4c922692cc",
+      "bytes": 4572
+    },
+    {
+      "ruta": "scripts/verificar_regresiones.py",
+      "sha256": "2ff54e4f502b539335756b4881ae8960bb40ee8949a1bf8abc7fe3b0deb26fd6",
+      "bytes": 2325
     },
     {
       "ruta": "semantic/SV_EXPORTACIONES.sv.yaml",

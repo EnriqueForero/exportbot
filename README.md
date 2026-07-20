@@ -29,3 +29,21 @@ cifra contra el resultado** y audita todo en telemetría.
 - `docs/` plan, estado del proyecto, runbook, decisiones, modelo semántico, diccionario
 
 Documentación de entrada: **docs/ESTADO_DEL_PROYECTO.md** (qué está hecho y qué falta).
+
+## Protección contra regresiones
+
+Antes de modificar el proyecto, lea `AGENTS.md` y `docs/CONTRATO_DE_REGRESION.md`.
+La línea base de capacidades está en `contracts/exportbot_v2_contract.json` y el
+contrato de transporte API en `contracts/openapi_v2_baseline.json`.
+
+Gate completo antes de publicar:
+
+```bash
+python scripts/verificar_regresiones.py
+```
+
+El gate ejecuta contrato/OpenAPI, pruebas backend, Ruff, build Vite, provisiona
+automáticamente Chromium, ejecuta la prueba E2E y compara portada y resultado.
+No actualice contratos ni capturas solo
+para hacer pasar el CI: un cambio intencional debe documentarse, versionarse y
+revisarse.
