@@ -1,0 +1,343 @@
+name: SV_EXPORTACIONES
+description: Modelo semantico de exportaciones colombianas (ProColombia). Hecho FACT_EXPORTACIONES_SL
+  con metricas de valor FOB, peso y cantidad, resuelto contra dimensiones de pais
+  destino, departamento de origen, posicion arancelaria, sector, subsector, medio
+  de transporte, aduana, ciudad de salida y empresa exportadora. WK_MES esta en formato
+  YYYYMM.
+tables:
+  - name: FACT_EXPORTACIONES_SL
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: FACT_EXPORTACIONES_SL
+    dimensions:
+      - name: DESC_CIUDAD_IMPORTADOR
+        expr: DESC_CIUDAD_IMPORTADOR
+        data_type: VARCHAR
+      - name: DESC_RAZON_IMPORTADOR
+        expr: DESC_RAZON_IMPORTADOR
+        data_type: VARCHAR
+      - name: WK_ADUANA
+        expr: WK_ADUANA
+        data_type: NUMBER
+      - name: WK_CIUDAD_SALIDA
+        expr: WK_CIUDAD_SALIDA
+        data_type: NUMBER
+      - name: WK_CUENTA_EXPORTADOR
+        expr: WK_CUENTA_EXPORTADOR
+        data_type: NUMBER
+      - name: WK_DEPARTAMENTO_ORIGEN
+        expr: WK_DEPARTAMENTO_ORIGEN
+        data_type: NUMBER
+      - name: WK_DEPARTAMENTO_PROCEDENCIA
+        expr: WK_DEPARTAMENTO_PROCEDENCIA
+        data_type: NUMBER
+      - name: WK_MEDIO_TRANSPORTE
+        expr: WK_MEDIO_TRANSPORTE
+        data_type: NUMBER
+      - name: WK_MES
+        expr: WK_MES
+        data_type: NUMBER
+      - name: WK_PAIS_RECEPTOR
+        expr: WK_PAIS_RECEPTOR
+        data_type: NUMBER
+      - name: WK_POSICION
+        expr: WK_POSICION
+        data_type: NUMBER
+    facts:
+      - name: VLR_CANTIDAD
+        expr: VLR_CANTIDAD
+        data_type: NUMBER
+      - name: VLR_PESO_BRUTO_KG
+        expr: VLR_PESO_BRUTO_KG
+        data_type: NUMBER
+      - name: VLR_PESO_NETO_KG
+        expr: VLR_PESO_NETO_KG
+        data_type: NUMBER
+      - name: VLR_USD_EXPORTACION_FOB
+        expr: VLR_USD_EXPORTACION_FOB
+        data_type: NUMBER
+      - name: VLR_USD_AGREGADO
+        expr: VLR_USD_AGREGADO
+        data_type: NUMBER
+      - name: VLR_USD_FLETES
+        expr: VLR_USD_FLETES
+        data_type: NUMBER
+      - name: VLR_USD_OTROS
+        expr: VLR_USD_OTROS
+        data_type: NUMBER
+      - name: VLR_USD_SEGUROS
+        expr: VLR_USD_SEGUROS
+        data_type: NUMBER
+  - name: DIM_PAIS_SL
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_PAIS_SL
+    primary_key:
+      columns:
+        - WK_PAIS
+    dimensions:
+      - name: ACUERDO
+        expr: ACUERDO
+        data_type: VARCHAR
+      - name: COD_PAIS_ALFA_3
+        expr: COD_PAIS_ALFA_3
+        data_type: VARCHAR
+      - name: CONTINENTE_DANE_DIAN
+        expr: CONTINENTE_DANE_DIAN
+        data_type: VARCHAR
+      - name: DESC_PAIS
+        expr: DESC_PAIS
+        data_type: VARCHAR
+      - name: HUB__C
+        expr: HUB__C
+        data_type: VARCHAR
+      - name: OFICINA_COMERCIAL
+        expr: OFICINA_COMERCIAL
+        data_type: VARCHAR
+      - name: REGION_COMUN
+        expr: REGION_COMUN
+        data_type: VARCHAR
+      - name: WK_PAIS
+        expr: WK_PAIS
+        data_type: NUMBER
+  - name: DIM_DEPARTAMENTO_SL
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_DEPARTAMENTO_SL
+    primary_key:
+      columns:
+        - WK_DEPARTAMENTO
+    dimensions:
+      - name: DEPARTAMENTO
+        expr: DEPARTAMENTO
+        data_type: VARCHAR
+      - name: WK_DEPARTAMENTO
+        expr: WK_DEPARTAMENTO
+        data_type: NUMBER
+  - name: DIM_ARANCEL_SL
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_ARANCEL_SL
+    primary_key:
+      columns:
+        - WK_POSICION
+    dimensions:
+      - name: DESC_POSICION
+        expr: DESC_POSICION
+        data_type: VARCHAR
+      - name: ECONOMIA_NARANJA
+        expr: ECONOMIA_NARANJA
+        data_type: VARCHAR
+      - name: ID_POSICION
+        expr: ID_POSICION
+        data_type: VARCHAR
+      - name: TIPO
+        expr: TIPO
+        data_type: VARCHAR
+      - name: WK_POSICION
+        expr: WK_POSICION
+        data_type: NUMBER
+      - name: WK_SECTOR
+        expr: WK_SECTOR
+        data_type: NUMBER
+      - name: WK_SUBSECTOR_ARANCEL
+        expr: WK_SUBSECTOR_ARANCEL
+        data_type: NUMBER
+      - name: CADENA_FRIO
+        expr: CADENA_FRIO
+        data_type: VARCHAR
+      - name: CADENA_PRODUCTIVA
+        expr: CADENA_PRODUCTIVA
+        data_type: VARCHAR
+  - name: DIM_SECTOR_SL
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_SECTOR_SL
+    primary_key:
+      columns:
+        - WK_SECTOR
+    dimensions:
+      - name: APUESTA_HABILITANTE
+        expr: APUESTA_HABILITANTE
+        data_type: VARCHAR
+      - name: DESC_SECTOR
+        expr: DESC_SECTOR
+        data_type: VARCHAR
+      - name: WK_SECTOR
+        expr: WK_SECTOR
+        data_type: NUMBER
+  - name: DIM_ARANCEL_SUBSECTOR_SL
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_ARANCEL_SUBSECTOR_SL
+    primary_key:
+      columns:
+        - WK_SUBSECTOR_ARANCEL
+    dimensions:
+      - name: WK_SUBSECTOR_ARANCEL
+        expr: WK_SUBSECTOR_ARANCEL
+        data_type: NUMBER
+      - name: DESC_SUBSECTOR_ARANCEL
+        expr: DESC_SUBSECTOR_ARANCEL
+        data_type: VARCHAR
+  - name: DIM_MEDIO_TRANSPORTE_SL
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_MEDIO_TRANSPORTE_SL
+    primary_key:
+      columns:
+        - WK_MEDIO_TRANSPORTE
+    dimensions:
+      - name: WK_MEDIO_TRANSPORTE
+        expr: WK_MEDIO_TRANSPORTE
+        data_type: NUMBER
+      - name: DESCRIPCION_MEDIO_TRANSPORTE
+        expr: DESCRIPCION_MEDIO_TRANSPORTE
+        data_type: VARCHAR
+  - name: DIM_ADUANA_SL
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_ADUANA_SL
+    primary_key:
+      columns:
+        - WK_ADUANA
+    dimensions:
+      - name: WK_ADUANA
+        expr: WK_ADUANA
+        data_type: NUMBER
+      - name: DESCRIPCION_ADUANA
+        expr: DESCRIPCION_ADUANA
+        data_type: VARCHAR
+  - name: DIM_CIUDAD_SL
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_CIUDAD_SL
+    primary_key:
+      columns:
+        - WK_CIUDAD
+    dimensions:
+      - name: DEPARTAMENTO_DIVIPOLA
+        expr: DEPARTAMENTO_DIVIPOLA
+        data_type: VARCHAR
+      - name: DESC_CIUDAD
+        expr: DESC_CIUDAD
+        data_type: VARCHAR
+      - name: WK_CIUDAD
+        expr: WK_CIUDAD
+        data_type: NUMBER
+  - name: DIM_CUENTA_SL
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_CUENTA_SL
+    primary_key:
+      columns:
+        - WK_CUENTA
+    dimensions:
+      - name: CADENA_ESTRELLA
+        expr: CADENA_ESTRELLA
+        data_type: VARCHAR
+      - name: DEPARTAMENTO_ESTRELLA
+        expr: DEPARTAMENTO_ESTRELLA
+        data_type: VARCHAR
+      - name: NUMERO_IDENTIFICACION
+        expr: NUMERO_IDENTIFICACION
+        data_type: VARCHAR
+      - name: RAZON_SOCIAL
+        expr: RAZON_SOCIAL
+        data_type: VARCHAR
+      - name: SECTOR_ESTRELLA
+        expr: SECTOR_ESTRELLA
+        data_type: VARCHAR
+      - name: SUBSECTOR_ESTRELLA
+        expr: SUBSECTOR_ESTRELLA
+        data_type: VARCHAR
+      - name: TAMANO_EMPRESA
+        expr: TAMANO_EMPRESA
+        data_type: VARCHAR
+      - name: TIPO_ESTRELLA
+        expr: TIPO_ESTRELLA
+        data_type: VARCHAR
+      - name: WK_CUENTA
+        expr: WK_CUENTA
+        data_type: NUMBER
+relationships:
+  - name: FACT_TO_PAIS
+    left_table: FACT_EXPORTACIONES_SL
+    right_table: DIM_PAIS_SL
+    join_type: left_outer
+    relationship_columns:
+      - left_column: WK_PAIS_RECEPTOR
+        right_column: WK_PAIS
+  - name: FACT_TO_DEPARTAMENTO
+    left_table: FACT_EXPORTACIONES_SL
+    right_table: DIM_DEPARTAMENTO_SL
+    join_type: left_outer
+    relationship_columns:
+      - left_column: WK_DEPARTAMENTO_ORIGEN
+        right_column: WK_DEPARTAMENTO
+  - name: FACT_TO_ARANCEL
+    left_table: FACT_EXPORTACIONES_SL
+    right_table: DIM_ARANCEL_SL
+    join_type: left_outer
+    relationship_columns:
+      - left_column: WK_POSICION
+        right_column: WK_POSICION
+  - name: FACT_TO_MEDIO_TRANSPORTE
+    left_table: FACT_EXPORTACIONES_SL
+    right_table: DIM_MEDIO_TRANSPORTE_SL
+    join_type: left_outer
+    relationship_columns:
+      - left_column: WK_MEDIO_TRANSPORTE
+        right_column: WK_MEDIO_TRANSPORTE
+  - name: FACT_TO_ADUANA
+    left_table: FACT_EXPORTACIONES_SL
+    right_table: DIM_ADUANA_SL
+    join_type: left_outer
+    relationship_columns:
+      - left_column: WK_ADUANA
+        right_column: WK_ADUANA
+  - name: FACT_TO_CIUDAD
+    left_table: FACT_EXPORTACIONES_SL
+    right_table: DIM_CIUDAD_SL
+    join_type: left_outer
+    relationship_columns:
+      - left_column: WK_CIUDAD_SALIDA
+        right_column: WK_CIUDAD
+  - name: FACT_TO_CUENTA
+    left_table: FACT_EXPORTACIONES_SL
+    right_table: DIM_CUENTA_SL
+    join_type: left_outer
+    relationship_columns:
+      - left_column: WK_CUENTA_EXPORTADOR
+        right_column: WK_CUENTA
+  - name: ARANCEL_TO_SECTOR
+    left_table: DIM_ARANCEL_SL
+    right_table: DIM_SECTOR_SL
+    join_type: left_outer
+    relationship_columns:
+      - left_column: WK_SECTOR
+        right_column: WK_SECTOR
+  - name: ARANCEL_TO_SUBSECTOR
+    left_table: DIM_ARANCEL_SL
+    right_table: DIM_ARANCEL_SUBSECTOR_SL
+    join_type: left_outer
+    relationship_columns:
+      - left_column: WK_SUBSECTOR_ARANCEL
+        right_column: WK_SUBSECTOR_ARANCEL
+verified_queries:
+  - name: 0;1
+    question: ¿Cuál es el total exportado en USD FOB por mes?
+    sql: SELECT WK_MES AS FECHA, SUM(VLR_USD_EXPORTACION_FOB) AS TOTAL_USD_FOB FROM
+      fact_exportaciones_sl WHERE WK_MES > 0 GROUP BY WK_MES ORDER BY WK_MES DESC
+    verified_at: 1784445133
+    verified_by: Semantic Model Generator

@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+coverage.xml
+# Node / Vite (dist se publica en el ZIP de release, NO en git)
+frontend/node_modules/
+frontend/dist/
+/dist/
+# Entorno y secretos
+.env
+.env.*
+*.p8
+*.pem
+# Resultados y artefactos
+eval/resultados/
+*.zip
+*.log
+.DS_Store
+.ipynb_checkpoints/

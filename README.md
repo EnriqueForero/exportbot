@@ -1,86 +1,31 @@
-# 🤖 ExportBot 🌎
+# ExportBot 2.0 · ProColombia
 
-ExportBot es una aplicación web interactiva que permite a los usuarios interactuar con un asistente de IA experto en SQL para obtener información sobre estadísticas de exportaciones de bienes de Colombia. El asistente tiene acceso a una tabla específica de una base de datos Snowflake y puede generar y ejecutar consultas SQL basadas en las preguntas de los usuarios.
+Chatbot institucional que responde preguntas en lenguaje natural sobre las
+**exportaciones de bienes de Colombia** (2006-01 → 2026-04) consultando Snowflake.
+La SQL la genera **Cortex Analyst** sobre la vista semántica `SV_EXPORTACIONES`;
+la app valida (solo lectura), ejecuta, redacta bajo contrato, **verifica cada
+cifra contra el resultado** y audita todo en telemetría.
 
-## 📋 Requisitos
+## Arranque rápido
+1. **Snowflake** (una vez): ejecute `sql/01_seguridad_roles.sql`,
+   `sql/02_telemetria_ddl.sql`, `sql/03_vistas_metricas.sql` y cree la vista
+   semántica (Snowsight, o `semantic/crear_semantic_view.sql`, o VÍA B YAML en
+   stage con `semantic/subir_yaml_a_stage.sql`).
+2. **Local**: copie `.env.example` → `.env`, complete credenciales y corra
+   `pip install -r backend/requirements.txt && (cd backend && uvicorn main:app --reload)`.
+   El ZIP de release ya trae `frontend/dist` compilado; para desarrollo de UI:
+   `cd frontend && npm install && npm run dev`.
+3. **Colab efímero**: suba la carpeta a Drive (`ProColombia/exportbot`), cree los
+   Secrets y ejecute `notebooks/Lanzar_App_Colab_Cloudflare.ipynb`.
+4. **Railway**: repositorio → New Project; el `Dockerfile` y `railway.toml` hacen
+   el resto. Variables = las de `.env.example` con `ARRANQUE_ESTRICTO=true`.
 
-- Python 3.7 o superior
-- Bibliotecas:
-  - openai
-  - streamlit
-  - snowflake-connector-python
+## Estructura
+- `backend/` FastAPI (config, snowflake_, motores, orquestador, routers, exportadores, tests)
+- `frontend/` React 18 + Vite + TS (chat con SSE, /metricas con token) · `dist/` en el release
+- `semantic/` vista semántica del usuario + modelo enriquecido + suite dorada
+- `sql/` roles, telemetría y vistas de métricas · `eval/` harness de exactitud
+- `notebooks/` Lanzar (Colab+Cloudflare) y Publicar (GitHub) ya configurados
+- `docs/` plan, estado del proyecto, runbook, decisiones, modelo semántico, diccionario
 
-## 🚀 Instalación
-
-1. Clona este repositorio:
-
-```bash
-git clone https://github.com/EnriqueForero/exportbot.git
-cd export-bot
-```
-
-2. Crea y activa un entorno virtual (opcional pero recomendado):
-
-```bash
-python -m venv venv
-source venv/bin/activate  # en Windows: venv\Scripts\activate
-```
-
-3. Instala las dependencias:
-
-```bash
-pip install -r requirements.txt
-```
-
-4. Configura las variables de entorno:
-
-- Crea un archivo `.env` en la raíz del proyecto.
-- Agrega la siguiente línea al archivo `.env` con tu clave API de OpenAI:
-
-```
-OPENAI_API_KEY=tu-clave-api-openai
-```
-
-5. Configura las credenciales de Snowflake en Streamlit Secrets:
-
-- En tu aplicación de Streamlit, ve a "Settings" > "Secrets".
-- Agrega las siguientes claves y valores:
-  - `SNOWFLAKE_ACCOUNT`: Tu nombre de cuenta de Snowflake.
-  - `SNOWFLAKE_USER`: Tu nombre de usuario de Snowflake.
-  - `SNOWFLAKE_PASSWORD`: Tu contraseña de Snowflake.
-  - `SNOWFLAKE_WAREHOUSE`: El nombre del almacén de datos (warehouse) de Snowflake.
-  - `SNOWFLAKE_DATABASE`: El nombre de la base de datos de Snowflake.
-  - `SNOWFLAKE_SCHEMA`: El nombre del esquema de Snowflake.
-
-## 🔧 Configuración
-
-- Revisa y actualiza las constantes en el archivo `prompts.py` según tu configuración de Snowflake y los requisitos de tu aplicación.
-
-## 💻 Uso
-
-1. Inicia la aplicación de Streamlit:
-
-```bash
-streamlit run frosty_app.py
-```
-
-2. Abre tu navegador web y ve a la URL proporcionada por Streamlit (por defecto, `http://localhost:8501`).
-
-3. Interactúa con ExportBot haciendo preguntas sobre estadísticas de exportaciones de bienes de Colombia. El asistente generará y ejecutará consultas SQL basadas en tus preguntas y mostrará los resultados en la aplicación web.
-
-## 📂 Estructura del proyecto
-
-- `frosty_app.py`: Archivo principal de la aplicación web ExportBot.
-- `prompts.py`: Configuración y generación del mensaje del sistema para ExportBot.
-- `funciones.py`: funciones para darle formato al documento en word a exportar.
-- `README.md`: Documentación del proyecto.
-- `requirements.txt`: Lista de dependencias del proyecto.
-
-## 🤝 Contribución
-
-Las contribuciones son bienvenidas. Si encuentras algún problema o tienes alguna sugerencia de mejora, por favor, abre un issue o envía un pull request.
-
-## 📄 Fuente
-
-La programación inicial de este proyecto fue tomada de https://quickstarts.snowflake.com/guide/frosty_llm_chatbot_on_streamlit_snowflake/#0 
-Aquí se hicieron modificaciones para cambiar las bases de datos a utilizar y el enfoque. 
+Documentación de entrada: **docs/ESTADO_DEL_PROYECTO.md** (qué está hecho y qué falta).

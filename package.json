@@ -1,0 +1,11 @@
+{
+  "name": "exportbot",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Raíz del monorepo ExportBot — marcador para las plantillas Colab; el frontend real vive en frontend/",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "cd frontend && npm ci --no-audit --no-fund && npm run build && cd .. && rm -rf dist && cp -r frontend/dist dist",
+    "dev": "cd frontend && npm run dev"
+  }
+}

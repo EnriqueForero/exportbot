@@ -1,0 +1,110 @@
+# Suite dorada de ExportBot 2.0 — contrato de calidad (DoD: exactitud >= 90 %).
+# Corra: python eval/evaluar.py   (exige credenciales Snowflake en el entorno).
+# `sql_referencia` es la verdad contra la que se compara el resultado del flujo.
+version: 1
+umbral_exactitud: 0.90
+preguntas:
+  - id: G01
+    pregunta: "¿Cuánto exportó Colombia en USD FOB en 2024?"
+    sql_referencia: >-
+      SELECT SUM(VLR_USD_EXPORTACION_FOB) AS TOTAL
+      FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL
+      WHERE WK_MES > 0 AND FLOOR(WK_MES/100) = 2024
+  - id: G02
+    pregunta: "Total exportado por año desde 2020"
+    sql_referencia: >-
+      SELECT FLOOR(WK_MES/100) AS ANIO, SUM(VLR_USD_EXPORTACION_FOB) AS TOTAL
+      FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL
+      WHERE WK_MES > 0 AND FLOOR(WK_MES/100) >= 2020 GROUP BY 1 ORDER BY 1
+  - id: G03
+    pregunta: "Top 10 países destino por valor exportado en 2025"
+    sql_referencia: >-
+      SELECT p.DESC_PAIS, SUM(f.VLR_USD_EXPORTACION_FOB) AS TOTAL
+      FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL f
+      LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_PAIS_SL p ON f.WK_PAIS_RECEPTOR = p.WK_PAIS
+      WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2025
+      GROUP BY 1 ORDER BY 2 DESC LIMIT 10
+  - id: G04
+    pregunta: "¿Cuánto exportó Antioquia en 2024?"
+    sql_referencia: >-
+      SELECT SUM(f.VLR_USD_EXPORTACION_FOB) AS TOTAL
+      FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL f
+      LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_DEPARTAMENTO_SL d
+        ON f.WK_DEPARTAMENTO_ORIGEN = d.WK_DEPARTAMENTO
+      WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2024 AND d.DEPARTAMENTO = 'Antioquia'
+  - id: G05
+    pregunta: "Exportaciones no mineras por año desde 2022"
+    sql_referencia: >-
+      SELECT FLOOR(f.WK_MES/100) AS ANIO, SUM(f.VLR_USD_EXPORTACION_FOB) AS TOTAL
+      FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL f
+      LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_ARANCEL_SL a ON f.WK_POSICION = a.WK_POSICION
+      WHERE f.WK_MES > 0 AND a.TIPO = 'No Mineras' AND FLOOR(f.WK_MES/100) >= 2022
+      GROUP BY 1 ORDER BY 1
+  - id: G06
+    pregunta: "Top 5 sectores por valor exportado en 2025"
+    sql_referencia: >-
+      SELECT s.DESC_SECTOR, SUM(f.VLR_USD_EXPORTACION_FOB) AS TOTAL
+      FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL f
+      LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_ARANCEL_SL a ON f.WK_POSICION = a.WK_POSICION
+      LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_SECTOR_SL s ON a.WK_SECTOR = s.WK_SECTOR
+      WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2025
+      GROUP BY 1 ORDER BY 2 DESC LIMIT 5
+  - id: G07
+    pregunta: "Exportaciones a Estados Unidos por medio de transporte en 2025"
+    sql_referencia: >-
+      SELECT mt.DESCRIPCION_MEDIO_TRANSPORTE, SUM(f.VLR_USD_EXPORTACION_FOB) AS TOTAL
+      FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL f
+      LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_PAIS_SL p ON f.WK_PAIS_RECEPTOR = p.WK_PAIS
+      LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_MEDIO_TRANSPORTE_SL mt
+        ON f.WK_MEDIO_TRANSPORTE = mt.WK_MEDIO_TRANSPORTE
+      WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2025 AND p.DESC_PAIS = 'Estados Unidos'
+      GROUP BY 1 ORDER BY 2 DESC
+  - id: G08
+    pregunta: "Peso neto total exportado en kilogramos en 2024"
+    sql_referencia: >-
+      SELECT SUM(VLR_PESO_NETO_KG) AS TOTAL_KG
+      FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL
+      WHERE WK_MES > 0 AND FLOOR(WK_MES/100) = 2024
+  - id: G09
+    pregunta: "Top 5 empresas exportadoras por valor en 2025"
+    sql_referencia: >-
+      SELECT c.RAZON_SOCIAL, SUM(f.VLR_USD_EXPORTACION_FOB) AS TOTAL
+      FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL f
+      LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_CUENTA_SL c ON f.WK_CUENTA_EXPORTADOR = c.WK_CUENTA
+      WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2025
+      GROUP BY 1 ORDER BY 2 DESC LIMIT 5
+  - id: G10
+    pregunta: "Exportaciones por continente destino en 2025"
+    sql_referencia: >-
+      SELECT p.CONTINENTE_DANE_DIAN, SUM(f.VLR_USD_EXPORTACION_FOB) AS TOTAL
+      FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL f
+      LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_PAIS_SL p ON f.WK_PAIS_RECEPTOR = p.WK_PAIS
+      WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2025
+      GROUP BY 1 ORDER BY 2 DESC
+  - id: G11
+    pregunta: "¿Cuánto exportó la cadena Agroalimentos en 2025?"
+    sql_referencia: >-
+      SELECT SUM(f.VLR_USD_EXPORTACION_FOB) AS TOTAL
+      FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL f
+      LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_ARANCEL_SL a ON f.WK_POSICION = a.WK_POSICION
+      WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2025 AND a.CADENA_PRODUCTIVA = 'Agroalimentos'
+  - id: G12
+    pregunta: "Serie mensual de exportaciones de 2025"
+    sql_referencia: >-
+      SELECT WK_MES, SUM(VLR_USD_EXPORTACION_FOB) AS TOTAL
+      FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL
+      WHERE WK_MES BETWEEN 202501 AND 202512 GROUP BY 1 ORDER BY 1
+  # ── Sin SQL de referencia: se evalúan manualmente (criterio en `criterio`). ──
+  - {id: G13, pregunta: "¿Qué acuerdo comercial concentró más exportaciones en 2025?", criterio: "Agrupa por DIM_PAIS_SL.ACUERDO con SUM FOB 2025."}
+  - {id: G14, pregunta: "Exportaciones del sector Café por año desde 2020", criterio: "Join arancel→sector, filtro DESC_SECTOR='Café'."}
+  - {id: G15, pregunta: "Top 10 posiciones arancelarias en 2025", criterio: "Agrupa por ID_POSICION/DESC_POSICION con SUM FOB."}
+  - {id: G16, pregunta: "¿Por qué aduana salió más valor en 2024?", criterio: "Join DIM_ADUANA_SL, orden DESC, top 1 razonado."}
+  - {id: G17, pregunta: "Exportaciones por tamaño de empresa en 2025", criterio: "Join DIM_CUENTA_SL.TAMANO_EMPRESA."}
+  - {id: G18, pregunta: "¿Cuánto pesó (bruto) lo exportado a China en 2024?", criterio: "SUM(VLR_PESO_BRUTO_KG) con filtro país China."}
+  - {id: G19, pregunta: "Comparar 2024 vs 2025 en valor FOB", criterio: "Dos años con SUM; sin inventar variaciones no calculadas en SQL."}
+  - {id: G20, pregunta: "Exportaciones de economía naranja por año", criterio: "Filtro ECONOMIA_NARANJA='Inclusión Total'."}
+  - {id: G21, pregunta: "Top ciudades de salida en 2025", criterio: "Join DIM_CIUDAD_SL.DESC_CIUDAD."}
+  - {id: G22, pregunta: "¿Cuál HUB creció más entre 2023 y 2025?", criterio: "Agrupa por HUB__C y años; la variación debe venir de la SQL."}
+  - {id: G23, pregunta: "Ventas externas del Valle del Cauca a la Unión Europea en 2024", criterio: "Filtros combinados departamento + ACUERDO."}
+  - {id: G24, pregunta: "Exportaciones con cadena de frío en 2025", criterio: "Filtro CADENA_FRIO='Si'."}
+  - {id: G25, pregunta: "¿Cuántas empresas distintas exportaron en 2025?", criterio: "COUNT(DISTINCT WK_CUENTA_EXPORTADOR) con WK_MES>0."}

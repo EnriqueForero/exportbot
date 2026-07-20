@@ -1,0 +1,10 @@
+# ExportBot 2.0 · Railway — despliegue con el Dockerfile del repositorio.
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/api/salud"
+healthcheckTimeout = 180
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5
