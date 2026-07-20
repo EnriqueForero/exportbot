@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "baseline": "2.0.0b2-A04-regression-guardrails",
+  "purpose": "Contrato ejecutable de capacidades que no pueden perderse por refactorizaciones o cambios visuales.",
+  "api_routes": [
+    {
+      "path": "/api/salud",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/proveedores",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/chat",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/exportar/excel",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/exportar/pptx",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/track/feedback",
+      "methods": [
+        "POST"
+      ]
+    },
+    {
+      "path": "/api/metricas/resumen",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/metricas/series",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/metricas/preguntas",
+      "methods": [
+        "GET"
+      ]
+    },
+    {
+      "path": "/api/metricas/feedback",
+      "methods": [
+        "GET"
+      ]
+    }
+  ],
+  "frontend_capabilities": [
+    "consulta_libre_hasta_800_caracteres",
+    "envio_por_boton_y_enter_con_shift_enter_para_salto",
+    "selector_de_proveedor_cuando_hay_mas_de_uno",
+    "consultas_de_referencia",
+    "progreso_sse_visible",
+    "error_de_servidor_visible_y_accionable",
+    "respuesta_redactada",
+    "metadatos_de_proveedor_latencias_verificacion_e_intentos",
+    "sql_ejecutada_expandible",
+    "tabla_de_resultados_y_aviso_de_truncamiento",
+    "descarga_excel_y_pptx",
+    "feedback_positivo_o_negativo_una_sola_vez",
+    "consultas_relacionadas",
+    "panel_metricas_protegido_por_token",
+    "panel_metricas_con_kpis_grafico_preguntas_y_feedback",
+    "cierre_de_sesion_del_panel"
+  ],
+  "backend_invariants": [
+    "arranque_degradado_sin_credenciales",
+    "sql_solo_lectura_y_esquemas_permitidos",
+    "limite_de_filas_forzado",
+    "verificacion_de_cifras_contra_resultados",
+    "exportables_validos_sin_snowflake",
+    "metricas_protegidas_por_admin_token",
+    "empaquetado_editable_desde_backend",
+    "notebooks_colab_sin_referencias_legacy"
+  ],
+  "visual_baseline": {
+    "viewport": {
+      "width": 1440,
+      "height": 1100
+    },
+    "max_changed_pixel_ratio": 0.04,
+    "pixel_threshold": 24,
+    "files": {
+      "inicio": "backend/tests/visual_baselines/exportbot_inicio.png",
+      "resultado": "backend/tests/visual_baselines/exportbot_resultado.png"
+    },
+    "comparison_scale": 0.25,
+    "blur_radius": 0.8
+  },
+  "verification_matrix": {
+    "frontend": {
+      "consulta_libre_hasta_800_caracteres": [
+        "e2e:consulta",
+        "source:ChatPage.tsx"
+      ],
+      "envio_por_boton_y_enter_con_shift_enter_para_salto": [
+        "e2e:consulta",
+        "source:ChatPage.tsx"
+      ],
+      "selector_de_proveedor_cuando_hay_mas_de_uno": [
+        "e2e:proveedores"
+      ],
+      "consultas_de_referencia": [
+        "e2e:portada"
+      ],
+      "progreso_sse_visible": [
+        "e2e:chat_sse"
+      ],
+      "error_de_servidor_visible_y_accionable": [
+        "e2e:error"
+      ],
+      "respuesta_redactada": [
+        "e2e:respuesta"
+      ],
+      "metadatos_de_proveedor_latencias_verificacion_e_intentos": [
+        "e2e:metadatos",
+        "pytest:notebook_contracts"
+      ],
+      "sql_ejecutada_expandible": [
+        "e2e:sql"
+      ],
+      "tabla_de_resultados_y_aviso_de_truncamiento": [
+        "e2e:tabla"
+      ],
+      "descarga_excel_y_pptx": [
+        "e2e:descargas",
+        "pytest:exportadores"
+      ],
+      "feedback_positivo_o_negativo_una_sola_vez": [
+        "e2e:feedback"
+      ],
+      "consultas_relacionadas": [
+        "e2e:sugerencias"
+      ],
+      "panel_metricas_protegido_por_token": [
+        "pytest:api_metricas",
+        "source:MetricasPage.tsx",
+        "build:vite"
+      ],
+      "panel_metricas_con_kpis_grafico_preguntas_y_feedback": [
+        "pytest:api_metricas",
+        "source:MetricasPage.tsx",
+        "build:vite"
+      ],
+      "cierre_de_sesion_del_panel": [
+        "source:MetricasPage.tsx",
+        "build:vite"
+      ]
+    },
+    "backend": {
+      "arranque_degradado_sin_credenciales": [
+        "pytest:test_api_smoke.py"
+      ],
+      "sql_solo_lectura_y_esquemas_permitidos": [
+        "pytest:test_sql_guard.py"
+      ],
+      "limite_de_filas_forzado": [
+        "pytest:test_sql_guard.py"
+      ],
+      "verificacion_de_cifras_contra_resultados": [
+        "pytest:test_verificador.py"
+      ],
+      "exportables_validos_sin_snowflake": [
+        "pytest:test_exportadores.py"
+      ],
+      "metricas_protegidas_por_admin_token": [
+        "pytest:test_api_smoke.py"
+      ],
+      "empaquetado_editable_desde_backend": [
+        "pytest:test_notebook_contracts.py"
+      ],
+      "notebooks_colab_sin_referencias_legacy": [
+        "pytest:test_notebook_contracts.py"
+      ]
+    }
+  }
+}

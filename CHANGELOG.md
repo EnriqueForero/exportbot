@@ -1,4 +1,28 @@
 # Changelog · ExportBot
+### A06 — Playwright reproducible en Colab
+
+- El publicador instala y valida automáticamente Chromium antes del gate E2E.
+- Se comparte `PLAYWRIGHT_BROWSERS_PATH` entre instalación y pytest.
+- Se añade fallback para dependencias Linux en runtimes root como Google Colab.
+- El mecanismo queda protegido por pruebas y por el generador de notebooks.
+
+
+
+## A05 — 2026-07-20
+
+- Corrige falso positivo del gate de rutas en Colab: validación sobre OpenAPI en lugar de `app.routes`.
+- Aísla imports de gates con `PYTHONPATH` del stage y `PYTHONNOUSERSITE=1`.
+- Añade diagnóstico del módulo `main` realmente importado antes de publicar.
+- Mantiene intacto el contrato OpenAPI y todas las pruebas funcionales.
+
+## 2.0.0b2-regression — 2026-07-20
+
+- Auditoría comparativa A02 → A03: 79 archivos idénticos, 10 modificados y 18 altas/bajas; ningún cambio funcional fuera de `frontend/`, bundles, changelog, manifiesto e informe visual.
+- Se restauran dos detalles de trazabilidad perdidos en A03: número exacto de intentos de autocorrección SQL y explicación del propósito del feedback.
+- Se incorpora contrato ejecutable de capacidades, matriz de trazabilidad y snapshot OpenAPI para detectar cambios silenciosos de rutas, payloads y respuestas.
+- Se añaden pruebas E2E de consulta, SSE, respuesta, SQL, tabla, descargas, feedback y errores, más líneas base visuales de portada y resultado.
+- Se incorpora `AGENTS.md`, gate único `scripts/verificar_regresiones.py`, hook pre-push y CI obligatorio para backend, frontend y regresión E2E/visual.
+- El notebook de publicación y su generador quedan sincronizados con los nuevos gates y artefactos contractuales.
 
 ## 2.0.0b2 — 2026-07-19
 Corrección de empaquetado y notebooks Colab (A09): se declara explícitamente el

@@ -226,8 +226,9 @@ el YAML — `docs/MODELO_SEMANTICO.md` — y repita: es iteración normal, no fr
 ## F7 · Publicar a GitHub (10 min)
 
 1. Secret de Colab `GITHUB_TOKEN` (classic, scope `repo`).
-2. Ejecute `notebooks/Publicar_GitHub.ipynb` (v3): gates = instala deps + pytest
-   (y ruff si `GATE_COMPLETO=True`), verifica `RELEASE_MANIFEST.json` (bloquea si
+2. Ejecute `notebooks/Publicar_GitHub.ipynb`: los gates instalan dependencias,
+   provisionan y validan Chromium para Playwright, ejecutan pytest/Ruff y verifican
+   `RELEASE_MANIFEST.json` (bloquea si
    faltan archivos) y hace push a la rama `v2-lanzamiento` de
    `github.com/EnriqueForero/exportbot`.
 3. En GitHub: abra el PR a `main` y confirme que el workflow `ci` pasa en verde.
@@ -265,6 +266,7 @@ escribiendo, exactitud dorada ≥ 90 % documentada en `eval/resultados/`.
 
 ## Solución de problemas (mapa error → causa → acción)
 
+- `Executable doesn't exist ... ms-playwright` → navegador de Playwright ausente. Use el notebook A06: instala y valida Chromium antes del E2E; no omita la prueba.
 - «Se esperaba UN proyecto … 0» → notebooks viejos (v2) o Drive a medio
   sincronizar → use los v3; el error ahora LISTA subcarpetas y qué marcador falta.
 - Analyst HTTP 401 → PAT vencido/mal copiado o política de red → F3.

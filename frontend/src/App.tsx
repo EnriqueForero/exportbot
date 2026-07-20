@@ -54,12 +54,20 @@ function PieLegal() {
 }
 
 export default function App() {
+  const testWindow = window as Window & {
+    __EXPORTBOT_TEST_BASENAME__?: string;
+    __EXPORTBOT_TEST_LOCATION__?: string;
+    __EXPORTBOT_ROUTER_WINDOW__?: Window;
+  };
   return (
-    <BrowserRouter>
+    <BrowserRouter
+      basename={testWindow.__EXPORTBOT_TEST_BASENAME__}
+      window={testWindow.__EXPORTBOT_ROUTER_WINDOW__}
+    >
       <div className="shell">
         <Encabezado />
         <main className="main-content">
-          <Routes>
+          <Routes location={testWindow.__EXPORTBOT_TEST_LOCATION__}>
             <Route path="/" element={<ChatPage />} />
             <Route path="/metricas" element={<Suspense fallback={<div className="cargando-pagina"><span className="spinner" /> Cargando métricas…</div>}><MetricasPage /></Suspense>} />
           </Routes>

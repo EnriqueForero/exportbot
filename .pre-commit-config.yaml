@@ -12,3 +12,11 @@ repos:
       - id: trailing-whitespace
       - id: check-yaml
         exclude: ^notebooks/
+  - repo: local
+    hooks:
+      - id: exportbot-regression-contract
+        name: ExportBot regression contract
+        entry: python -m pytest backend/tests/test_regression_contract.py backend/tests/test_notebook_contracts.py -q --no-header
+        language: system
+        pass_filenames: false
+        stages: [pre-push]

@@ -13,6 +13,8 @@ dev = [
   "pytest>=8.2",
   "httpx>=0.27",
   "ruff>=0.6",
+  "playwright==1.57.0",
+  "pillow>=10",
 ]
 
 # El backend usa imports planos (config, main, orquestador, schemas) y cuatro
@@ -38,6 +40,9 @@ extend-select = ["I"]
 
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]
+markers = [
+  "e2e: pruebas de navegador y regresión visual (requieren Chromium)",
+]
 
 [tool.ruff.lint.isort]
 known-first-party = ["config", "schemas", "orquestador", "snowflake_", "motores", "routers", "exportadores", "main"]
