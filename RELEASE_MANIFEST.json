@@ -1,8 +1,8 @@
 {
   "proyecto": "exportbot",
   "version": "2.0.0b2",
-  "generado_utc": "2026-07-19T23:06:16+00:00",
-  "n_archivos": 82,
+  "generado_utc": "2026-07-20T02:01:02+00:00",
+  "n_archivos": 86,
   "archivos": [
     {
       "ruta": ".env.example",
@@ -26,8 +26,8 @@
     },
     {
       "ruta": "CHANGELOG.md",
-      "sha256": "a91473ce665445bcbc9177f26cc86f4d5f34ad2408c71d756623e41c5a0f17a2",
-      "bytes": 2159
+      "sha256": "13212675fbf306734248fd75ec3b8aa60befdbfda51f4c3a7a31d50e1b3e9660",
+      "bytes": 2899
     },
     {
       "ruta": "Dockerfile",
@@ -235,14 +235,19 @@
       "bytes": 2182
     },
     {
+      "ruta": "docs/VERIFICACION_REDISENO_VISUAL_2026-07-19.md",
+      "sha256": "4286a9d5ddbc135cd88fa5182a2ac637bcc080c825857547f02772f18e0b7918",
+      "bytes": 2592
+    },
+    {
       "ruta": "eval/evaluar.py",
       "sha256": "ca01f27135d59f1837dd70cbd839301392e67034491e3d79a098ef9746e75ffb",
       "bytes": 4413
     },
     {
       "ruta": "frontend/index.html",
-      "sha256": "e91ff383aa6bc72af73643b8b4cfe5719d20d51ede88531899c0154a8e912f72",
-      "bytes": 384
+      "sha256": "4c2d81abf9fa192773096777cc38bd6132185d5a2abebdf79cfa79969a849eb6",
+      "bytes": 731
     },
     {
       "ruta": "frontend/package-lock.json",
@@ -266,13 +271,28 @@
     },
     {
       "ruta": "frontend/src/App.tsx",
-      "sha256": "9c21c9192e1ab1780ffefa64395401e5899c4eaf371555e29588b59e3f7eac87",
-      "bytes": 1166
+      "sha256": "038dd9a6d42618ee1d7afe1ba93f344e9ae04439c5d4dc958f4d5505e5a3e4bc",
+      "bytes": 2719
     },
     {
       "ruta": "frontend/src/api/cliente.ts",
       "sha256": "af2278ab50e50dc00ee85855fb2c260e40a012f24a88f19fb8bd230ed7247306",
       "bytes": 3511
+    },
+    {
+      "ruta": "frontend/src/assets/logos/mincit-procolombia-blanco.svg",
+      "sha256": "12a5135e47a745854c4a8724ee582a3f3d563477de18775c8cb7fc90eff01293",
+      "bytes": 59167
+    },
+    {
+      "ruta": "frontend/src/assets/logos/procolombia-color.svg",
+      "sha256": "9030e9e90b7efd6a627d4191d7f5f87378e3b14b90ff81632e3d3ad7d7820bcd",
+      "bytes": 59319
+    },
+    {
+      "ruta": "frontend/src/components/Icon.tsx",
+      "sha256": "8797c953ce21e64a8a9c7f182da4013df063c577116fe8bcf50324ad0ccf1455",
+      "bytes": 2484
     },
     {
       "ruta": "frontend/src/main.tsx",
@@ -281,18 +301,18 @@
     },
     {
       "ruta": "frontend/src/pages/ChatPage.tsx",
-      "sha256": "98728c52764a5a7ca0cea02272d5a1587f5fd228b4f594d301988be432650c25",
-      "bytes": 8717
+      "sha256": "c44d91efe89f41db6df3ccccef75a0566c442df30e5a7675977b06e45b91f5ab",
+      "bytes": 17885
     },
     {
       "ruta": "frontend/src/pages/MetricasPage.tsx",
-      "sha256": "d8fa1d541a2c87a27537410956cff48b561f1eb095f313a1a28703be16f23c8b",
-      "bytes": 5843
+      "sha256": "f09ced3df842c19affb5b04b127d42ccae049ac6a3b7b61034f5d85f0d0e9930",
+      "bytes": 7963
     },
     {
       "ruta": "frontend/src/tema.css",
-      "sha256": "317c8048a00302130ae5b7b43672a8218591315af27de532078688cbd5abb4d3",
-      "bytes": 8514
+      "sha256": "f22c8786a0ff2c043cb698eaf0b1fe6826be73f6422b11c72a034b7ebddd0320",
+      "bytes": 17742
     },
     {
       "ruta": "frontend/src/tipos/plotly.d.ts",
@@ -311,8 +331,8 @@
     },
     {
       "ruta": "frontend/tsconfig.app.tsbuildinfo",
-      "sha256": "3de6d6d39d3b9c4c0d74e8ffe60541d8da97123c50dbbf28291e30be5ddb312b",
-      "bytes": 185
+      "sha256": "39ddd280faba2e9bc1da8ba8630e9b7c457a2b75d0d7dcebc10ea47ead2f7aa3",
+      "bytes": 213
     },
     {
       "ruta": "frontend/tsconfig.json",

@@ -1,1 +1,1 @@
-{"root":["./src/App.tsx","./src/main.tsx","./src/tipos.ts","./src/api/cliente.ts","./src/pages/ChatPage.tsx","./src/pages/MetricasPage.tsx","./src/tipos/plotly.d.ts"],"version":"5.6.3"}
+{"root":["./src/App.tsx","./src/main.tsx","./src/tipos.ts","./src/api/cliente.ts","./src/components/Icon.tsx","./src/pages/ChatPage.tsx","./src/pages/MetricasPage.tsx","./src/tipos/plotly.d.ts"],"version":"5.6.3"}

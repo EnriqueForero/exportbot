@@ -31,3 +31,11 @@ Reescritura completa (v1 Streamlit+GPT-3.5 → arquitectura de estándar interna
 
 ## 1.x — 2024
 Prototipo Streamlit (patrón Frosty): regex sobre gpt-3.5, sin validación ni telemetría.
+
+## 2.0.0b2-ui — 2026-07-19
+
+- Rediseño completo del frontend para alinearlo con el sistema visual de Gestión de Conocimiento: navbar institucional blanca, héroe océano, acento ámbar, tipografías Jost/Maven Pro, tarjetas, tablas, avisos y pie legal.
+- La consulta deja de usar una barra flotante tipo chat y pasa a una tarjeta institucional con ejemplos, proveedor y resultados trazables.
+- Resultados, SQL, exportaciones, feedback y panel de métricas fueron adaptados al mismo lenguaje visual.
+- `/metricas` se carga de forma diferida: el bundle inicial baja de ~4,88 MB a ~184 KB; Plotly solo se descarga cuando se abre el panel.
+- Se añadieron logos SVG institucionales y ajustes responsivos para escritorio, tableta y móvil.
