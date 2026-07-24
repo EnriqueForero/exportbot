@@ -195,7 +195,7 @@ def _parchear_localizar(nb: dict, nueva_funcion: str) -> None:
     s = _src(celda)
     # lambda: el reemplazo es literal (re.sub procesaría los \\n del texto nuevo)
     s, n = re.subn(
-        r"def localizar_proyecto.*?return candidatos\[0\]\n", lambda _m: nueva_funcion, s, count=1, flags=re.S
+        r"def localizar_proyecto.*?return candidatos\[0\]\n", lambda _m: nueva_funcion, s, count=1, flags=re.DOTALL
     )
     if n != 1:
         raise SystemExit("No se pudo reemplazar localizar_proyecto")
@@ -327,23 +327,31 @@ def adaptar_publicar() -> None:
     celda = _celda_con(nb, "CELDA A — CONFIGURACIÓN")
     s = _src(celda)
     s = _sub(
-        s, r'^RUTA_DRIVE\s*=\s*"[^"]*"', 'RUTA_DRIVE         = "/content/drive/MyDrive/ProColombia/exportbot"', re.M
+        s,
+        r'^RUTA_DRIVE\s*=\s*"[^"]*"',
+        'RUTA_DRIVE         = "/content/drive/MyDrive/ProColombia/exportbot"',
+        re.MULTILINE,
     )
-    s = _sub(s, r'^NOMBRE_REPO_GITHUB\s*=\s*"[^"]*"', 'NOMBRE_REPO_GITHUB = "exportbot"', re.M)
+    s = _sub(s, r'^NOMBRE_REPO_GITHUB\s*=\s*"[^"]*"', 'NOMBRE_REPO_GITHUB = "exportbot"', re.MULTILINE)
     s = _sub(
         s,
         r'DESCRIPCION_REPO\s*=\s*\(.*?"\)',
         'DESCRIPCION_REPO   = ("ExportBot 2.0 — chatbot NL→SQL de exportaciones de Colombia "\n'
         '                      "(FastAPI + Snowflake Cortex Analyst + React). Uso interno · ProColombia.")',
-        re.S,
+        re.DOTALL,
     )
-    s = _sub(s, r'^RAMA_TRABAJO\s*=\s*"[^"]*"', 'RAMA_TRABAJO   = "v2-lanzamiento"', re.M)
-    s = _sub(s, r"^GATE_COMPLETO\s*=\s*(True|False).*", "GATE_COMPLETO = True    # lint + E2E + regresión visual", re.M)
+    s = _sub(s, r'^RAMA_TRABAJO\s*=\s*"[^"]*"', 'RAMA_TRABAJO   = "v2-lanzamiento"', re.MULTILINE)
+    s = _sub(
+        s,
+        r"^GATE_COMPLETO\s*=\s*(True|False).*",
+        "GATE_COMPLETO = True    # lint + E2E + regresión visual",
+        re.MULTILINE,
+    )
     s = _sub(
         s,
         r'^MENSAJE_COMMIT\s*=\s*"[^"]*"',
         'MENSAJE_COMMIT = "release: v{version} — ExportBot 2.0 (núcleo F0–F6)"',
-        re.M,
+        re.MULTILINE,
     )
     s = _sub(
         s,
@@ -353,7 +361,7 @@ def adaptar_publicar() -> None:
         '    ["npm", "--prefix", "frontend", "ci", "--no-audit", "--no-fund"],\n'
         '    ["npm", "--prefix", "frontend", "run", "build"],\n'
         "]",
-        re.S,
+        re.DOTALL,
     )
     s = _sub(
         s,
@@ -363,7 +371,7 @@ def adaptar_publicar() -> None:
         '    ["{venv}/ruff", "format", "--check", "backend", "eval", "scripts"],\n'
         '    ["{venv}/python", "-m", "pytest", "backend/tests/test_frontend_e2e.py", "-q", "--no-header"],\n'
         "]",
-        re.S,
+        re.DOTALL,
     )
     ast.parse(s)
     _poner_src(celda, s)

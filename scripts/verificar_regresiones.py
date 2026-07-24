@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parent.parent
 def run(command: list[str], cwd: Path = ROOT, env: dict[str, str] | None = None) -> None:
     """Run one gate and fail immediately with complete diagnostics."""
     print("  $", " ".join(command), flush=True)
-    result = subprocess.run(command, cwd=cwd, text=True, env=env)
+    result = subprocess.run(command, cwd=cwd, text=True, env=env, check=False)
     if result.returncode != 0:
         raise SystemExit(f"⛔ Gate falló ({result.returncode}): {' '.join(command)}")
 

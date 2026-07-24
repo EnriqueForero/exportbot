@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "exportbot"
-version = "2.0.0b2"
+version = "2.0.0"
 description = "ExportBot 2.0 — chatbot NL→SQL de exportaciones de Colombia (FastAPI + Snowflake Cortex Analyst + React). Uso interno · ProColombia."
 requires-python = ">=3.11"
 

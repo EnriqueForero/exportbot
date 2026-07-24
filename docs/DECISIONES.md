@@ -32,3 +32,28 @@ ajustadas DURANTE la construcción:
 - **A8 · Notebooks: solo Celda A.** Sus plantillas declaran "Celda B no se toca";
   la adaptación fue quirúrgica por regex sobre la Celda A y el encabezado,
   preservando su pipeline endurecido (saneo de lockfiles, latidos, timeouts).
+
+
+## D13 · Zona horaria en la sesión, no en las consultas (2026-07-23)
+`TIMESTAMP_LTZ` + `TIMEZONE=America/Bogota` como parámetro de sesión de la conexión.
+El instante absoluto queda intacto; la conversión ocurre al presentar. Se descarta el
+patrón `CONVERT_TIMEZONE('America/Los_Angeles', ...)` visto en scripts del equipo:
+acopla los datos al huso del servidor de turno.
+
+## D14 · UI_EVENT reemplaza a EVENTOS_APP; CHAT_LOG/FEEDBACK retro-compatibles (2026-07-23)
+La transición no pierde datos: los INSERT del b2 a CHAT_LOG/FEEDBACK siguen siendo
+válidos en el esquema v2 (columnas nuevas con DEFAULT). Solo el evento de UI cambia de
+tabla, con el bug de versión corregido en el mismo movimiento.
+
+## D15 · claude-sonnet-4-6 por defecto; Opus 4.7 opcional por UI (2026-07-23)
+La capa 5 ya garantiza las cifras; el redactor solo necesita fluidez. Sonnet 4.6 da
+precisión suficiente a menor costo/latencia; la comparación con Opus queda en manos
+del selector de proveedores y del feedback registrado.
+
+
+## D16 · Una sola versión, vigilada (2026-07-24)
+El publicador bloqueó el release por versiones divergentes (pyproject en b2,
+VERSION en rc3): bump parcial mío en los rc. Corrección estructural, no puntual:
+las cuatro fuentes de versión deben ser idénticas y `test_version_coherente.py`
+rompe la suite ante cualquier divergencia. El gate hizo su trabajo; ahora es
+imposible llegar a él con el error.

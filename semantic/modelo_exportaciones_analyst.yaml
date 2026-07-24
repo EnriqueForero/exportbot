@@ -135,7 +135,7 @@ tables:
         data_type: VARCHAR
         description: Acuerdo comercial vigente con el país destino.
         synonyms: ["acuerdo comercial", "tlc", "tratado"]
-        sample_values: ["Estados Unidos", "Unión Europea", "ALADI", "CARICOM", "EFTA", "Corea", "Canadá", "No Aplica"]
+        sample_values: ["ESTADOS UNIDOS", "UNION EUROPEA", "ALADI", "CARICOM", "EFTA", "COREA", "CANADA", "NO APLICA"]
       - name: COD_PAIS_ALFA_3
         expr: COD_PAIS_ALFA_3
         data_type: VARCHAR
@@ -186,7 +186,7 @@ tables:
         data_type: VARCHAR
         description: Departamento de origen (32 departamentos de Colombia).
         synonyms: ["departamento", "departamento de origen", "región de origen"]
-        sample_values: ["Antioquia", "Bogotá", "Valle del Cauca", "Cundinamarca", "Atlántico", "Bolívar", "Santander"]
+        sample_values: ["ANTIOQUIA", "BOGOTA", "VALLE DEL CAUCA", "CUNDINAMARCA", "ATLANTICO", "BOLIVAR", "SANTANDER"]
       - name: WK_DEPARTAMENTO
         expr: WK_DEPARTAMENTO
         data_type: NUMBER
@@ -210,7 +210,7 @@ tables:
         data_type: VARCHAR
         description: Pertenencia del bien a la economía naranja.
         synonyms: ["economía naranja"]
-        sample_values: ["Inclusión Total", "No Aplica"]
+        sample_values: ["Inclusión Total", "NO APLICA"]
       - name: ID_POSICION
         expr: ID_POSICION
         data_type: VARCHAR
@@ -221,7 +221,7 @@ tables:
         data_type: VARCHAR
         description: Clasificación minero-energética del bien.
         synonyms: ["tipo", "minero o no minero", "minero-energético"]
-        sample_values: ["Mineras", "No Mineras"]
+        sample_values: ["MINERAS", "NO MINERAS"]
       - name: WK_POSICION
         expr: WK_POSICION
         data_type: NUMBER
@@ -242,7 +242,7 @@ tables:
         data_type: VARCHAR
         description: Cadena productiva de ProColombia a la que pertenece el bien.
         synonyms: ["cadena", "cadena productiva"]
-        sample_values: ["Agroalimentos", "Industrias 4.0", "Metalmecánica y Otras Industrias", "Químicos y Ciencias de la Vida", "Sistema Moda", "Mineras", "Otros"]
+        sample_values: ["AGROALIMENTOS", "Industrias 4.0", "Metalmecánica y Otras Industrias", "Químicos y Ciencias de la Vida", "Sistema Moda", "MINERAS", "Otros"]
   - name: DIM_SECTOR_SL
     description: Sector productivo (dimensión corporativa; llega vía arancel).
     base_table:
@@ -466,7 +466,7 @@ custom_instructions: >
   pida explícitamente "procedencia" o "logística". (5) Las variables "estrella" de
   DIM_CUENTA_SL describen a la EMPRESA (no a la operación); no usarlas para agrupar
   operaciones salvo petición explícita. (6) Si piden "no minero" filtrar
-  DIM_ARANCEL_SL.TIPO = 'No Mineras'; "minero" es TIPO = 'Mineras'. (7) Ante
+  DIM_ARANCEL_SL.TIPO = 'NO MINERAS'; "minero" es TIPO = 'MINERAS'. (7) Ante
   ambigüedad de periodo, usar el último año calendario completo disponible y decirlo.
 verified_queries:
   - name: total_fob_por_mes
@@ -523,7 +523,7 @@ verified_queries:
       SELECT FLOOR(f.WK_MES/100) AS ANIO, SUM(f.VLR_USD_EXPORTACION_FOB) AS TOTAL_USD_FOB
       FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL f
       LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_ARANCEL_SL a ON f.WK_POSICION = a.WK_POSICION
-      WHERE f.WK_MES > 0 AND a.TIPO = 'No Mineras'
+      WHERE f.WK_MES > 0 AND a.TIPO = 'NO MINERAS'
       GROUP BY 1 ORDER BY 1 DESC
     verified_at: 1784445133
     verified_by: GIC ProColombia
@@ -537,7 +537,7 @@ verified_queries:
         ON f.WK_DEPARTAMENTO_ORIGEN = d.WK_DEPARTAMENTO
       LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_CUENTA_SL c
         ON f.WK_CUENTA_EXPORTADOR = c.WK_CUENTA
-      WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2025 AND d.DEPARTAMENTO = 'Antioquia'
+      WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2025 AND d.DEPARTAMENTO = 'ANTIOQUIA'
       GROUP BY 1, 2 ORDER BY 3 DESC LIMIT 5
     verified_at: 1784445133
     verified_by: GIC ProColombia
@@ -550,7 +550,7 @@ verified_queries:
       LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_PAIS_SL p ON f.WK_PAIS_RECEPTOR = p.WK_PAIS
       LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_MEDIO_TRANSPORTE_SL mt
         ON f.WK_MEDIO_TRANSPORTE = mt.WK_MEDIO_TRANSPORTE
-      WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2025 AND p.DESC_PAIS = 'Estados Unidos'
+      WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2025 AND p.DESC_PAIS = 'ESTADOS UNIDOS'
       GROUP BY 1 ORDER BY 2 DESC
     verified_at: 1784445133
     verified_by: GIC ProColombia

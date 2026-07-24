@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 from datetime import datetime
+from zoneinfo import ZoneInfo
+
+_TZ_BOGOTA = ZoneInfo("America/Bogota")
 
 from fastapi import APIRouter, Request
 from fastapi.responses import Response
@@ -28,17 +31,19 @@ def _respuesta(contenido: bytes, nombre: str, mime: str) -> Response:
 def exportar_excel(entrada: ExportEntrada, request: Request) -> Response:
     """Construye el Excel institucional del resultado y registra la descarga."""
     contenido = excel.construir(entrada.pregunta, entrada.texto, entrada.sql, entrada.columnas, entrada.filas)
-    request.app.state.telemetria.log_evento(
-        "descarga_excel", {"chat_id": entrada.chat_id, "n_filas": len(entrada.filas)}, entrada.session_id
+    nombre = f"exportbot_{datetime.now(_TZ_BOGOTA):%Y%m%d_%H%M}.xlsx"
+    request.app.state.telemetria.log_descarga(
+        entrada.chat_id, "excel", nombre, len(entrada.filas), len(entrada.columnas), entrada.session_id, entrada.user_id
     )
-    return _respuesta(contenido, f"exportbot_{datetime.now():%Y%m%d_%H%M}.xlsx", _MIME_XLSX)
+    return _respuesta(contenido, nombre, _MIME_XLSX)
 
 
 @router.post("/exportar/pptx")
 def exportar_pptx(entrada: ExportEntrada, request: Request) -> Response:
     """Construye la presentación institucional del resultado y registra la descarga."""
     contenido = pptx.construir(entrada.pregunta, entrada.texto, entrada.sql, entrada.columnas, entrada.filas)
-    request.app.state.telemetria.log_evento(
-        "descarga_pptx", {"chat_id": entrada.chat_id, "n_filas": len(entrada.filas)}, entrada.session_id
+    nombre = f"exportbot_{datetime.now(_TZ_BOGOTA):%Y%m%d_%H%M}.pptx"
+    request.app.state.telemetria.log_descarga(
+        entrada.chat_id, "pptx", nombre, len(entrada.filas), len(entrada.columnas), entrada.session_id, entrada.user_id
     )
-    return _respuesta(contenido, f"exportbot_{datetime.now():%Y%m%d_%H%M}.pptx", _MIME_PPTX)
+    return _respuesta(contenido, nombre, _MIME_PPTX)

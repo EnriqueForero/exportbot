@@ -1,0 +1,669 @@
+name: SV_EXPORTACIONES
+description: |
+  Modelo semántico de exportaciones de bienes de Colombia (ProColombia). Hecho FACT_EXPORTACIONES_SL con valor FOB en dólares (USD), pesos y cantidades, resuelto contra dimensiones de país destino, departamento de origen, posición arancelaria, sector, subsector, medio de transporte, aduana, ciudad de salida y empresa exportadora. El tiempo vive en WK_MES con formato YYYYMM (grano mensual, cobertura 200601–202604). Registros válidos: WK_MES > 0.
+tables:
+  - name: DIM_ADUANA_SL
+    description: Aduana por la que se tramitó la exportación.
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_ADUANA_SL
+    dimensions:
+      - name: DESCRIPCION_ADUANA
+        synonyms:
+          - aduana
+        description: Aduana de trámite de la declaración.
+        expr: DESCRIPCION_ADUANA
+        data_type: VARCHAR(80)
+      - name: WK_ADUANA
+        expr: WK_ADUANA
+        data_type: NUMBER(10,0)
+    primary_key:
+      columns:
+        - WK_ADUANA
+  - name: DIM_ARANCEL_SL
+    description: Posición arancelaria (10 dígitos) y su clasificación productiva.
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_ARANCEL_SL
+    dimensions:
+      - name: CADENA_FRIO
+        synonyms:
+          - cadena de frío
+        description: Indica si el bien requiere cadena de frío.
+        expr: CADENA_FRIO
+        data_type: VARCHAR(22)
+        sample_values:
+          - Si
+          - 'No'
+          - NO DEFINIDO
+      - name: CADENA_PRODUCTIVA
+        synonyms:
+          - cadena
+          - cadena productiva
+        description: Cadena productiva de ProColombia a la que pertenece el bien.
+        expr: CADENA_PRODUCTIVA
+        data_type: VARCHAR(250)
+        sample_values:
+          - AGROALIMENTOS
+          - INDUSTRIAS 4.0
+          - METALMECÁNICA Y OTRAS INDUSTRIAS
+          - QUÍMICOS Y CIENCIAS DE LA VIDA
+          - SISTEMA MODA
+          - MINERAS
+          - OTROS
+      - name: DESC_POSICION
+        synonyms:
+          - descripción arancelaria
+          - partida
+          - producto
+        description: Descripción de la posición arancelaria.
+        expr: DESC_POSICION
+        data_type: VARCHAR(255)
+      - name: ECONOMIA_NARANJA
+        synonyms:
+          - economía naranja
+        description: Pertenencia del bien a la economía naranja.
+        expr: ECONOMIA_NARANJA
+        data_type: VARCHAR(250)
+        sample_values:
+          - INCLUSION TOTAL
+          - NO APLICA
+      - name: ID_POSICION
+        synonyms:
+          - código arancelario
+          - hs10
+          - posición arancelaria
+          - subpartida
+        description: Código arancelario de 10 dígitos.
+        expr: ID_POSICION
+        data_type: VARCHAR(80)
+      - name: TIPO
+        synonyms:
+          - minero o no minero
+          - minero-energético
+          - tipo
+        description: Clasificación minero-energética del bien.
+        expr: TIPO
+        data_type: VARCHAR(250)
+        sample_values:
+          - MINERAS
+          - NO MINERAS
+      - name: WK_POSICION
+        expr: WK_POSICION
+        data_type: NUMBER(10,0)
+      - name: WK_SECTOR
+        expr: WK_SECTOR
+        data_type: NUMBER(10,0)
+      - name: WK_SUBSECTOR_ARANCEL
+        expr: WK_SUBSECTOR_ARANCEL
+        data_type: NUMBER(10,0)
+    primary_key:
+      columns:
+        - WK_POSICION
+  - name: DIM_ARANCEL_SUBSECTOR_SL
+    description: Subsector del bien exportado (llega vía arancel).
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_ARANCEL_SUBSECTOR_SL
+    dimensions:
+      - name: DESC_SUBSECTOR_ARANCEL
+        synonyms:
+          - subsector
+        description: Subsector del bien exportado.
+        expr: DESC_SUBSECTOR_ARANCEL
+        data_type: VARCHAR(250)
+      - name: WK_SUBSECTOR_ARANCEL
+        expr: WK_SUBSECTOR_ARANCEL
+        data_type: NUMBER(10,0)
+    primary_key:
+      columns:
+        - WK_SUBSECTOR_ARANCEL
+  - name: DIM_CIUDAD_SL
+    description: Ciudad de salida de la mercancía.
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_CIUDAD_SL
+    dimensions:
+      - name: DEPARTAMENTO_DIVIPOLA
+        description: Departamento DIVIPOLA de la ciudad de salida.
+        expr: DEPARTAMENTO_DIVIPOLA
+        data_type: VARCHAR(80)
+      - name: DESC_CIUDAD
+        synonyms:
+          - ciudad
+          - ciudad de salida
+          - puerto de salida
+        description: Ciudad de salida de la mercancía.
+        expr: DESC_CIUDAD
+        data_type: VARCHAR(80)
+      - name: WK_CIUDAD
+        expr: WK_CIUDAD
+        data_type: NUMBER(10,0)
+    primary_key:
+      columns:
+        - WK_CIUDAD
+  - name: DIM_CUENTA_SL
+    description: Empresa exportadora (NIT) con sus variables "estrella" precalculadas.
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_CUENTA_SL
+    dimensions:
+      - name: CADENA_ESTRELLA
+        description: Cadena que más exporta la empresa (nivel empresa, no operación).
+        expr: CADENA_ESTRELLA
+        data_type: VARCHAR(200)
+      - name: DEPARTAMENTO_ESTRELLA
+        description: Departamento del que más exporta la empresa.
+        expr: DEPARTAMENTO_ESTRELLA
+        data_type: VARCHAR(200)
+      - name: NUMERO_IDENTIFICACION
+        synonyms:
+          - identificación
+          - nit
+          - nit exportador
+        description: NIT de la empresa exportadora.
+        expr: NUMERO_IDENTIFICACION
+        data_type: VARCHAR(80)
+      - name: RAZON_SOCIAL
+        synonyms:
+          - compañía
+          - empresa
+          - exportador
+          - razón social
+        description: Razón social de la empresa exportadora.
+        expr: RAZON_SOCIAL
+        data_type: VARCHAR(250)
+      - name: SECTOR_ESTRELLA
+        synonyms:
+          - sector estrella
+        description: Sector que más exporta la empresa (nivel empresa).
+        expr: SECTOR_ESTRELLA
+        data_type: VARCHAR(200)
+      - name: SUBSECTOR_ESTRELLA
+        description: Subsector que más exporta la empresa (nivel empresa).
+        expr: SUBSECTOR_ESTRELLA
+        data_type: VARCHAR(200)
+      - name: TAMANO_EMPRESA
+        synonyms:
+          - tamaño
+          - tamaño de empresa
+        description: Tamaño de la empresa exportadora.
+        expr: TAMANO_EMPRESA
+        data_type: VARCHAR(20)
+        sample_values:
+          - MICRO
+          - PEQUEÑA
+          - MEDIANA
+          - GRANDE
+          - DESCONOCIDO
+      - name: TIPO_ESTRELLA
+        description: Tipo (minero/no minero) que más exporta la empresa.
+        expr: TIPO_ESTRELLA
+        data_type: VARCHAR(200)
+      - name: WK_CUENTA
+        expr: WK_CUENTA
+        data_type: NUMBER(10,0)
+    primary_key:
+      columns:
+        - WK_CUENTA
+  - name: DIM_DEPARTAMENTO_SL
+    description: Departamento colombiano de origen de la mercancía.
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_DEPARTAMENTO_SL
+    dimensions:
+      - name: DEPARTAMENTO
+        synonyms:
+          - departamento
+          - departamento de origen
+          - región de origen
+        description: Departamento de origen (32 departamentos de Colombia).
+        expr: DEPARTAMENTO
+        data_type: VARCHAR(80)
+        sample_values:
+          - ANTIOQUIA
+          - BOGOTÁ
+          - VALLE DEL CAUCA
+          - CUNDINAMARCA
+          - ATLÁNTICO
+          - BOLÍVAR
+          - SANTANDER
+      - name: WK_DEPARTAMENTO
+        expr: WK_DEPARTAMENTO
+        data_type: NUMBER(10,0)
+    primary_key:
+      columns:
+        - WK_DEPARTAMENTO
+  - name: DIM_MEDIO_TRANSPORTE_SL
+    description: Medio de transporte de la exportación.
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_MEDIO_TRANSPORTE_SL
+    dimensions:
+      - name: DESCRIPCION_MEDIO_TRANSPORTE
+        synonyms:
+          - medio de transporte
+          - modo de transporte
+          - vía
+        description: Medio de transporte de la mercancía.
+        expr: DESCRIPCION_MEDIO_TRANSPORTE
+        data_type: VARCHAR(80)
+        sample_values:
+          - MARÍTIMO
+          - AÉREO
+          - TERRESTRE
+          - FLUVIAL
+          - TUBERÍA
+          - MULTIMODAL
+      - name: WK_MEDIO_TRANSPORTE
+        expr: WK_MEDIO_TRANSPORTE
+        data_type: NUMBER(10,0)
+    primary_key:
+      columns:
+        - WK_MEDIO_TRANSPORTE
+  - name: DIM_PAIS_SL
+    description: País destino de la exportación y sus agrupaciones comerciales.
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_PAIS_SL
+    dimensions:
+      - name: ACUERDO
+        synonyms:
+          - acuerdo comercial
+          - tlc
+          - tratado
+        description: Acuerdo comercial vigente con el país destino.
+        expr: ACUERDO
+        data_type: VARCHAR(50)
+        sample_values:
+          - ESTADOS UNIDOS
+          - UNIÓN EUROPEA
+          - ALADI
+          - CARICOM
+          - EFTA
+          - COREA
+          - CANADÁ
+          - NO APLICA
+      - name: COD_PAIS_ALFA_3
+        synonyms:
+          - código del país
+          - iso3
+        description: Código ISO alfa-3 del país destino.
+        expr: COD_PAIS_ALFA_3
+        data_type: VARCHAR(3)
+      - name: CONTINENTE_DANE_DIAN
+        synonyms:
+          - continente
+        description: Continente del país destino (clasificación DANE-DIAN).
+        expr: CONTINENTE_DANE_DIAN
+        data_type: VARCHAR(80)
+        sample_values:
+          - AMÉRICA
+          - ASIA
+          - EUROPA
+          - ÁFRICA
+          - OCEANÍA
+          - ZONAS FRANCAS COLOMBIA
+          - NO DECLARADOS
+      - name: DESC_PAIS
+        synonyms:
+          - destino
+          - mercado
+          - pais
+          - país
+          - país de destino
+          - país destino
+        description: Nombre del país destino de la exportación.
+        expr: DESC_PAIS
+        data_type: VARCHAR(80)
+      - name: HUB__C
+        synonyms:
+          - hub
+          - hub comercial
+        description: HUB comercial de ProColombia que agrupa oficinas.
+        expr: HUB__C
+        data_type: VARCHAR(50)
+        sample_values:
+          - NORTEAMÉRICA
+          - EUROPA
+          - ASIA
+          - LATINOAMÉRICA
+          - ALIANZA PACÍFICO
+          - OTROS
+      - name: OFICINA_COMERCIAL
+        synonyms:
+          - oficina
+          - oficina comercial
+        description: Oficina comercial de ProColombia que gestiona el país.
+        expr: OFICINA_COMERCIAL
+        data_type: VARCHAR(50)
+      - name: REGION_COMUN
+        synonyms:
+          - región
+          - zona geográfica
+        description: Región geográfica común del país destino.
+        expr: REGION_COMUN
+        data_type: VARCHAR(80)
+      - name: WK_PAIS
+        expr: WK_PAIS
+        data_type: NUMBER(10,0)
+    primary_key:
+      columns:
+        - WK_PAIS
+  - name: DIM_SECTOR_SL
+    description: Sector productivo (dimensión corporativa; llega vía arancel).
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: DIM_SECTOR_SL
+    dimensions:
+      - name: APUESTA_HABILITANTE
+        description: Apuesta o habilitante estratégico del sector.
+        expr: APUESTA_HABILITANTE
+        data_type: VARCHAR(50)
+      - name: DESC_SECTOR
+        synonyms:
+          - sector
+          - sector productivo
+        description: Sector productivo del bien exportado (vía posición arancelaria).
+        expr: DESC_SECTOR
+        data_type: VARCHAR(250)
+        sample_values:
+          - CAFÉ
+          - FLORES Y PLANTAS VIVAS
+          - PETRÓLEO Y SUS DERIVADOS
+          - CARBÓN
+          - TEXTILES Y CONFECCIONES
+          - COSMÉTICOS Y PRODUCTOS DE ASEO
+          - METALMECÁNICA
+      - name: WK_SECTOR
+        expr: WK_SECTOR
+        data_type: NUMBER(10,0)
+    primary_key:
+      columns:
+        - WK_SECTOR
+  - name: FACT_EXPORTACIONES_SL
+    description: |
+      Tabla de hechos: una fila por línea de declaración de exportación y mes. Métrica principal: VLR_USD_EXPORTACION_FOB (dólares FOB). Filtrar siempre WK_MES > 0.
+    base_table:
+      database: DWH_PROCOLOMBIA_SNOWFLAKE
+      schema: SILVER
+      table: FACT_EXPORTACIONES_SL
+    dimensions:
+      - name: ANIO
+        synonyms:
+          - anio
+          - año
+          - vigencia
+          - year
+        description: Año calendario derivado de WK_MES (formato YYYYMM).
+        expr: FLOOR(WK_MES/100)
+        data_type: NUMBER(17,0)
+      - name: DESC_CIUDAD_IMPORTADOR
+        synonyms:
+          - ciudad del comprador
+          - ciudad del importador
+        description: Ciudad del importador en el país destino (texto declarado).
+        expr: DESC_CIUDAD_IMPORTADOR
+        data_type: VARCHAR(80)
+      - name: DESC_RAZON_IMPORTADOR
+        synonyms:
+          - cliente en destino
+          - comprador
+          - importador
+        description: Razón social del importador (comprador) en el exterior.
+        expr: DESC_RAZON_IMPORTADOR
+        data_type: VARCHAR(250)
+      - name: MES_NUMERO
+        synonyms:
+          - mes del año
+          - número de mes
+        description: Número del mes (1 a 12) derivado de WK_MES.
+        expr: MOD(WK_MES,100)
+        data_type: NUMBER(10,0)
+      - name: PERIODO
+        synonyms:
+          - año-mes
+          - corte
+          - mes
+          - periodo
+          - yyyymm
+        description: Periodo mensual en formato YYYYMM (ej. 202604 = abril de 2026).
+        expr: WK_MES
+        data_type: NUMBER(10,0)
+      - name: WK_ADUANA
+        expr: WK_ADUANA
+        data_type: NUMBER(10,0)
+      - name: WK_CIUDAD_SALIDA
+        expr: WK_CIUDAD_SALIDA
+        data_type: NUMBER(10,0)
+      - name: WK_CUENTA_EXPORTADOR
+        expr: WK_CUENTA_EXPORTADOR
+        data_type: NUMBER(10,0)
+      - name: WK_DEPARTAMENTO_ORIGEN
+        expr: WK_DEPARTAMENTO_ORIGEN
+        data_type: NUMBER(10,0)
+      - name: WK_DEPARTAMENTO_PROCEDENCIA
+        description: Usar SOLO si piden "procedencia"; para origen usar WK_DEPARTAMENTO_ORIGEN.
+        expr: WK_DEPARTAMENTO_PROCEDENCIA
+        data_type: NUMBER(10,0)
+      - name: WK_MEDIO_TRANSPORTE
+        expr: WK_MEDIO_TRANSPORTE
+        data_type: NUMBER(10,0)
+      - name: WK_MES
+        description: Clave de tiempo YYYYMM; los registros válidos cumplen WK_MES > 0.
+        expr: WK_MES
+        data_type: NUMBER(10,0)
+      - name: WK_PAIS_RECEPTOR
+        expr: WK_PAIS_RECEPTOR
+        data_type: NUMBER(10,0)
+      - name: WK_POSICION
+        expr: WK_POSICION
+        data_type: NUMBER(10,0)
+    facts:
+      - name: VLR_CANTIDAD
+        synonyms:
+          - cantidad
+          - unidades
+        description: Cantidad exportada en la unidad comercial declarada.
+        expr: VLR_CANTIDAD
+        data_type: NUMBER(18,2)
+        access_modifier: public_access
+      - name: VLR_PESO_BRUTO_KG
+        synonyms:
+          - kilos brutos
+          - peso bruto
+        description: Peso bruto en kilogramos.
+        expr: VLR_PESO_BRUTO_KG
+        data_type: NUMBER(18,2)
+        access_modifier: public_access
+      - name: VLR_PESO_NETO_KG
+        synonyms:
+          - kg
+          - kilos
+          - peso
+          - peso neto
+          - toneladas (dividir kg entre 1000)
+        description: Peso neto en kilogramos.
+        expr: VLR_PESO_NETO_KG
+        data_type: NUMBER(18,2)
+        access_modifier: public_access
+      - name: VLR_USD_AGREGADO
+        synonyms:
+          - valor agregado
+        description: Valor agregado en USD asociado a la operación.
+        expr: VLR_USD_AGREGADO
+        data_type: NUMBER(18,2)
+        access_modifier: public_access
+      - name: VLR_USD_EXPORTACION_FOB
+        synonyms:
+          - dólares
+          - exportaciones
+          - monto exportado
+          - usd fob
+          - valor exportado
+          - valor fob
+          - ventas externas
+        description: MÉTRICA PRINCIPAL. Valor exportado FOB en dólares (USD). Se agrega con SUM.
+        expr: VLR_USD_EXPORTACION_FOB
+        data_type: NUMBER(18,2)
+        access_modifier: public_access
+      - name: VLR_USD_FLETES
+        synonyms:
+          - costo de flete
+          - fletes
+        description: Fletes en USD.
+        expr: VLR_USD_FLETES
+        data_type: NUMBER(18,2)
+        access_modifier: public_access
+      - name: VLR_USD_OTROS
+        description: Otros valores en USD de la operación.
+        expr: VLR_USD_OTROS
+        data_type: NUMBER(18,2)
+        access_modifier: public_access
+      - name: VLR_USD_SEGUROS
+        synonyms:
+          - seguros
+        description: Seguros en USD.
+        expr: VLR_USD_SEGUROS
+        data_type: NUMBER(18,2)
+        access_modifier: public_access
+relationships:
+  - name: ARANCEL_TO_SECTOR
+    left_table: DIM_ARANCEL_SL
+    right_table: DIM_SECTOR_SL
+    relationship_columns:
+      - left_column: WK_SECTOR
+        right_column: WK_SECTOR
+    join_type: left_outer
+  - name: ARANCEL_TO_SUBSECTOR
+    left_table: DIM_ARANCEL_SL
+    right_table: DIM_ARANCEL_SUBSECTOR_SL
+    relationship_columns:
+      - left_column: WK_SUBSECTOR_ARANCEL
+        right_column: WK_SUBSECTOR_ARANCEL
+    join_type: left_outer
+  - name: FACT_TO_ADUANA
+    left_table: FACT_EXPORTACIONES_SL
+    right_table: DIM_ADUANA_SL
+    relationship_columns:
+      - left_column: WK_ADUANA
+        right_column: WK_ADUANA
+    join_type: left_outer
+  - name: FACT_TO_ARANCEL
+    left_table: FACT_EXPORTACIONES_SL
+    right_table: DIM_ARANCEL_SL
+    relationship_columns:
+      - left_column: WK_POSICION
+        right_column: WK_POSICION
+    join_type: left_outer
+  - name: FACT_TO_CIUDAD
+    left_table: FACT_EXPORTACIONES_SL
+    right_table: DIM_CIUDAD_SL
+    relationship_columns:
+      - left_column: WK_CIUDAD_SALIDA
+        right_column: WK_CIUDAD
+    join_type: left_outer
+  - name: FACT_TO_CUENTA
+    left_table: FACT_EXPORTACIONES_SL
+    right_table: DIM_CUENTA_SL
+    relationship_columns:
+      - left_column: WK_CUENTA_EXPORTADOR
+        right_column: WK_CUENTA
+    join_type: left_outer
+  - name: FACT_TO_DEPARTAMENTO
+    left_table: FACT_EXPORTACIONES_SL
+    right_table: DIM_DEPARTAMENTO_SL
+    relationship_columns:
+      - left_column: WK_DEPARTAMENTO_ORIGEN
+        right_column: WK_DEPARTAMENTO
+    join_type: left_outer
+  - name: FACT_TO_MEDIO_TRANSPORTE
+    left_table: FACT_EXPORTACIONES_SL
+    right_table: DIM_MEDIO_TRANSPORTE_SL
+    relationship_columns:
+      - left_column: WK_MEDIO_TRANSPORTE
+        right_column: WK_MEDIO_TRANSPORTE
+    join_type: left_outer
+  - name: FACT_TO_PAIS
+    left_table: FACT_EXPORTACIONES_SL
+    right_table: DIM_PAIS_SL
+    relationship_columns:
+      - left_column: WK_PAIS_RECEPTOR
+        right_column: WK_PAIS
+    join_type: left_outer
+verified_queries:
+  - name: TOTAL_FOB_POR_MES
+    sql: SELECT WK_MES AS PERIODO, SUM(VLR_USD_EXPORTACION_FOB) AS TOTAL_USD_FOB FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL WHERE WK_MES > 0 GROUP BY WK_MES ORDER BY WK_MES DESC
+    question: ¿Cuál es el total exportado en USD FOB por mes?
+    verified_at: 1784445133
+    verified_by: GIC ProColombia
+    use_as_onboarding_question: false
+  - name: TOTAL_FOB_POR_ANIO
+    sql: SELECT FLOOR(WK_MES/100) AS ANIO, SUM(VLR_USD_EXPORTACION_FOB) AS TOTAL_USD_FOB FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL WHERE WK_MES > 0 GROUP BY 1 ORDER BY 1 DESC
+    question: ¿Cuánto exportó Colombia en dólares FOB por año?
+    verified_at: 1784445133
+    verified_by: GIC ProColombia
+    use_as_onboarding_question: false
+  - name: TOP_PAISES_2025
+    sql: SELECT p.DESC_PAIS AS PAIS_DESTINO, SUM(f.VLR_USD_EXPORTACION_FOB) AS TOTAL_USD_FOB FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL f LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_PAIS_SL p ON f.WK_PAIS_RECEPTOR = p.WK_PAIS WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2025 GROUP BY 1 ORDER BY 2 DESC LIMIT 10
+    question: ¿Cuáles fueron los 10 principales países destino por valor exportado en 2025?
+    verified_at: 1784445133
+    verified_by: GIC ProColombia
+    use_as_onboarding_question: false
+  - name: FOB_POR_DEPARTAMENTO_ORIGEN
+    sql: |-
+      SELECT d.DEPARTAMENTO AS DEPARTAMENTO_ORIGEN, SUM(f.VLR_USD_EXPORTACION_FOB) AS TOTAL_USD_FOB FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL f LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_DEPARTAMENTO_SL d
+        ON f.WK_DEPARTAMENTO_ORIGEN = d.WK_DEPARTAMENTO
+      WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2024 GROUP BY 1 ORDER BY 2 DESC
+    question: ¿Cuánto exportó cada departamento de origen en 2024?
+    verified_at: 1784445133
+    verified_by: GIC ProColombia
+    use_as_onboarding_question: false
+  - name: FOB_POR_SECTOR
+    sql: SELECT s.DESC_SECTOR AS SECTOR, SUM(f.VLR_USD_EXPORTACION_FOB) AS TOTAL_USD_FOB FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL f LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_ARANCEL_SL a ON f.WK_POSICION = a.WK_POSICION LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_SECTOR_SL s ON a.WK_SECTOR = s.WK_SECTOR WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2025 GROUP BY 1 ORDER BY 2 DESC LIMIT 20
+    question: ¿Cuáles fueron los sectores con mayor valor exportado en 2025?
+    verified_at: 1784445133
+    verified_by: GIC ProColombia
+    use_as_onboarding_question: false
+  - name: NO_MINERAS_POR_ANIO
+    sql: SELECT FLOOR(f.WK_MES/100) AS ANIO, SUM(f.VLR_USD_EXPORTACION_FOB) AS TOTAL_USD_FOB FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL f LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_ARANCEL_SL a ON f.WK_POSICION = a.WK_POSICION WHERE f.WK_MES > 0 AND a.TIPO = 'NO MINERAS' GROUP BY 1 ORDER BY 1 DESC
+    question: ¿Cómo han evolucionado las exportaciones no mineras por año?
+    verified_at: 1784445133
+    verified_by: GIC ProColombia
+    use_as_onboarding_question: false
+  - name: TOP_EMPRESAS_ANTIOQUIA_2025
+    sql: |-
+      SELECT c.RAZON_SOCIAL AS EXPORTADOR, c.NUMERO_IDENTIFICACION AS NIT,
+             SUM(f.VLR_USD_EXPORTACION_FOB) AS TOTAL_USD_FOB
+      FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL f LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_DEPARTAMENTO_SL d
+        ON f.WK_DEPARTAMENTO_ORIGEN = d.WK_DEPARTAMENTO
+      LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_CUENTA_SL c
+        ON f.WK_CUENTA_EXPORTADOR = c.WK_CUENTA
+      WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2025 AND d.DEPARTAMENTO = 'ANTIOQUIA' GROUP BY 1, 2 ORDER BY 3 DESC LIMIT 5
+    question: ¿Cuáles fueron las 5 empresas que más exportaron desde Antioquia en 2025?
+    verified_at: 1784445133
+    verified_by: GIC ProColombia
+    use_as_onboarding_question: false
+  - name: EEUU_POR_MEDIO_TRANSPORTE_2025
+    sql: |-
+      SELECT mt.DESCRIPCION_MEDIO_TRANSPORTE AS MEDIO_TRANSPORTE,
+             SUM(f.VLR_USD_EXPORTACION_FOB) AS TOTAL_USD_FOB
+      FROM DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.FACT_EXPORTACIONES_SL f LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_PAIS_SL p ON f.WK_PAIS_RECEPTOR = p.WK_PAIS LEFT JOIN DWH_PROCOLOMBIA_SNOWFLAKE.SILVER.DIM_MEDIO_TRANSPORTE_SL mt
+        ON f.WK_MEDIO_TRANSPORTE = mt.WK_MEDIO_TRANSPORTE
+      WHERE f.WK_MES > 0 AND FLOOR(f.WK_MES/100) = 2025 AND p.DESC_PAIS = 'ESTADOS UNIDOS' GROUP BY 1 ORDER BY 2 DESC
+    question: ¿Cómo se distribuyeron por medio de transporte las exportaciones a Estados Unidos en 2025?
+    verified_at: 1784445133
+    verified_by: GIC ProColombia
+    use_as_onboarding_question: false
+module_custom_instructions:
+  sql_generation: |
+    Reglas obligatorias: (1) Filtrar siempre WK_MES > 0. (2) La métrica de valor por defecto es SUM(VLR_USD_EXPORTACION_FOB) en dólares FOB; nunca mezclar monedas ni inventar deflactores. (3) El año se calcula como FLOOR(WK_MES/100); no unir con dimensiones de fecha de grano diario. (4) Para departamento usar WK_DEPARTAMENTO_ORIGEN y para transporte WK_MEDIO_TRANSPORTE, salvo que el usuario pida explícitamente "procedencia" o "logística". (5) Las variables "estrella" de DIM_CUENTA_SL describen a la EMPRESA (no a la operación); no usarlas para agrupar operaciones salvo petición explícita. (6) Si piden "no minero" filtrar DIM_ARANCEL_SL.TIPO = 'NO MINERAS'; "minero" es TIPO = 'MINERAS'. (7) Ante ambigüedad de periodo, usar el último año calendario completo disponible y decirlo.

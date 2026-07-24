@@ -74,6 +74,7 @@ class Orquestador:
         historial: list[dict[str, Any]] | None = None,
         proveedor: str = "",
         session_id: str = "",
+        user_id: str = "",
     ) -> Iterator[dict[str, Any]]:
         """Genera los eventos del flujo completo para una pregunta.
 
@@ -106,6 +107,7 @@ class Orquestador:
         registro: dict[str, Any] = {
             "chat_id": chat_id,
             "session_id": session_id,
+            "user_id": user_id,
             "pregunta": pregunta,
             "version_app": VERSION_APP,
             "version_semantica": cfg.semantic_model_file or cfg.semantic_view,
@@ -126,7 +128,7 @@ class Orquestador:
                     "No pude convertir la pregunta en una consulta sobre la base de exportaciones. "
                     "Intente reformularla con más precisión."
                 )
-                registro.update(exito=False, error="analyst_sin_sql")
+                registro.update(exito=False, error="analyst_sin_sql", respuesta=texto)
                 self._log(registro, t0)
                 yield self._evento(
                     "final",
@@ -198,6 +200,7 @@ class Orquestador:
 
             # 4) Redacción bajo contrato --------------------------------
             yield self._evento("etapa", chat_id=chat_id, etapa="redaccion", detalle="Redactando la respuesta…")
+            t_red = time.monotonic()
             red = redactar(cfg, self._fabrica, proveedor, pregunta, resultado)
             registro.update(proveedor=red.proveedor, modelo=red.modelo)
 
@@ -207,7 +210,13 @@ class Orquestador:
                 logger.warning("Cifras huérfanas en la redacción (%s); se usa plantilla.", verif.huerfanas[:5])
                 red.texto = plantilla_resumen(pregunta, resultado)
                 red.proveedor, red.modelo, red.degradado = "plantilla", "", True
-            registro.update(cifras_ok=verif.ok, exito=True)
+            registro.update(
+                cifras_ok=verif.ok,
+                exito=True,
+                respuesta=red.texto,
+                respuesta_degradada=red.degradado,
+                latencia_redaccion_ms=int((time.monotonic() - t_red) * 1000),
+            )
             self._log(registro, t0)
 
             # 6) Final ---------------------------------------------------
@@ -227,7 +236,7 @@ class Orquestador:
             registro.update(exito=False, error=f"analyst: {str(exc)[:400]}")
             self._log(registro, t0)
             yield self._evento("error", chat_id=chat_id, mensaje=f"Cortex Analyst no respondió: {str(exc)[:300]}")
-        except Exception as exc:  # noqa: BLE001 - frontera del servicio
+        except Exception as exc:
             logger.exception("Fallo inesperado del orquestador")
             registro.update(exito=False, error=f"interno: {str(exc)[:400]}")
             self._log(registro, t0)

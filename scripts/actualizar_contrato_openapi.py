@@ -17,7 +17,7 @@ BACKEND = ROOT / "backend"
 if str(BACKEND) not in sys.path:
     sys.path.insert(0, str(BACKEND))
 
-import main as main_mod  # noqa: E402
+import main as main_mod
 
 CONTRACT_PATH = ROOT / "contracts" / "exportbot_v2_contract.json"
 SNAPSHOT_PATH = ROOT / "contracts" / "openapi_v2_baseline.json"

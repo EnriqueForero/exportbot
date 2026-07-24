@@ -14,6 +14,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
+from middleware import AuditoriaHTTP
 
 from config import RAIZ_PROYECTO, VERSION_APP, cargar_config
 from motores.redactor import proveedores_disponibles
@@ -37,6 +38,21 @@ async def ciclo_vida(app: FastAPI):
     """Inicializa configuración, conexión, Analyst y telemetría; cierra ordenado."""
     cfg = cargar_config()
     problemas = cfg.validar()
+    llave_rsa = "no aplica (auth=pat)" if cfg.modo_auth != "keypair" else ""
+    if cfg.modo_auth == "keypair":
+        from snowflake_.llaves import describir_llave
+
+        b64 = cfg.sf_private_key_b64_1 or cfg.sf_private_key_b64_2
+        frase = cfg.sf_key_passphrase_1 if cfg.sf_private_key_b64_1 else cfg.sf_key_passphrase_2
+        legible, detalle = describir_llave(b64, frase)
+        llave_rsa = f"legible ({detalle})" if legible else f"ILEGIBLE: {detalle}"
+        if not legible:
+            problemas.append(f"Llave RSA ilegible: {detalle}")
+        if cfg.sf_private_key_b64_1 and cfg.sf_private_key_b64_2:
+            ok2, det2 = describir_llave(cfg.sf_private_key_b64_2, cfg.sf_key_passphrase_2)
+            llave_rsa_2 = f"legible ({det2})" if ok2 else f"ILEGIBLE: {det2}"
+        else:
+            llave_rsa_2 = ""
     if problemas:
         mensaje = "Configuración incompleta: " + " | ".join(problemas)
         if cfg.arranque_estricto:
@@ -52,11 +68,13 @@ async def ciclo_vida(app: FastAPI):
 
     app.state.cfg = cfg
     app.state.problemas_config = problemas
+    app.state.llave_rsa = llave_rsa
+    app.state.llave_rsa_2 = llave_rsa_2 if cfg.modo_auth == "keypair" else ""
     app.state.gestor = gestor
     app.state.telemetria = telemetria
     app.state.orquestador = Orquestador(cfg, fabrica, telemetria, analyst)
 
-    telemetria.log_evento("app_inicio", {"version": VERSION_APP, "auth": cfg.modo_auth})
+    telemetria.log_evento("app_inicio", {"auth": cfg.modo_auth}, detalle=f"arranque {cfg.entorno}")
     logger.info("ExportBot %s listo (auth=%s, telemetria=%s)", VERSION_APP, cfg.modo_auth, telemetria.activa)
     try:
         yield
@@ -68,6 +86,7 @@ async def ciclo_vida(app: FastAPI):
 def crear_app() -> FastAPI:
     """Fábrica de la aplicación (facilita pruebas con entornos controlados)."""
     app = FastAPI(title="ExportBot 2.0", version=VERSION_APP, lifespan=ciclo_vida)
+    app.add_middleware(AuditoriaHTTP)  # EVENT_LOG: un registro por request /api/*
 
     origenes_extra = [o.strip() for o in cargar_config().cors_origenes.split(",") if o.strip()]
     if origenes_extra:

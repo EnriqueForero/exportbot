@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "application_version": "2.0.0b2",
+  "application_version": "2.0.0",
   "paths": {
     "/api/salud": {
       "get": {
@@ -415,6 +415,30 @@
             "type": "string",
             "title": "Session Id",
             "default": ""
+          },
+          "user_id": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "User Id",
+            "default": ""
+          },
+          "detalle": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Detalle",
+            "default": ""
+          },
+          "objetivo": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Objetivo",
+            "default": ""
+          },
+          "pagina": {
+            "type": "string",
+            "maxLength": 50,
+            "title": "Pagina",
+            "default": ""
           }
         },
         "type": "object",
@@ -465,6 +489,12 @@
             "type": "string",
             "title": "Session Id",
             "default": ""
+          },
+          "user_id": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "User Id",
+            "default": ""
           }
         },
         "type": "object",
@@ -492,6 +522,12 @@
           "session_id": {
             "type": "string",
             "title": "Session Id",
+            "default": ""
+          },
+          "user_id": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "User Id",
             "default": ""
           }
         },
@@ -541,6 +577,12 @@
             "type": "string",
             "maxLength": 64,
             "title": "Session Id",
+            "default": ""
+          },
+          "user_id": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "User Id",
             "default": ""
           }
         },

@@ -9,7 +9,6 @@ de forma diferida para que el paquete cargue (y se pruebe) sin el driver.
 
 from __future__ import annotations
 
-import base64
 import logging
 import threading
 import time
@@ -26,24 +25,15 @@ _MARCAS_ERROR_LLAVE = ("JWT token is invalid", "JWT_TOKEN_INVALID", "Private key
 
 
 def _cargar_llave_der(b64_pem: str, passphrase: str) -> bytes:
-    """Convierte una llave privada PEM (Base64) al DER PKCS#8 que exige el conector.
+    """Convierte la llave privada (PEM-b64, DER-b64 o PEM crudo) al DER PKCS#8 del conector.
 
-    Args:
-        b64_pem: Llave privada PEM codificada en Base64 (una sola línea).
-        passphrase: Frase de la llave; cadena vacía si no está cifrada.
-
-    Returns:
-        Bytes DER PKCS#8 sin cifrar, listos para el parámetro ``private_key``.
+    La tolerancia de formato vive en :mod:`snowflake_.llaves` — misma lógica
+    que usa el JWT de Cortex Analyst, para que un secreto válido lo sea en
+    TODAS las capas o en ninguna.
     """
-    from cryptography.hazmat.primitives import serialization
+    from snowflake_.llaves import cargar_llave_privada, llave_a_der_pkcs8
 
-    pem = base64.b64decode(b64_pem)
-    clave = serialization.load_pem_private_key(pem, password=passphrase.encode() or None)
-    return clave.private_bytes(
-        encoding=serialization.Encoding.DER,
-        format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.NoEncryption(),
-    )
+    return llave_a_der_pkcs8(cargar_llave_privada(b64_pem, passphrase))
 
 
 class GestorConexion:
@@ -74,6 +64,9 @@ class GestorConexion:
             "session_parameters": {
                 "QUERY_TAG": self._query_tag,
                 "STATEMENT_TIMEOUT_IN_SECONDS": cfg.timeout_sql_s,
+                # Hora institucional en toda la sesión: los TIMESTAMP_LTZ de
+                # telemetría se escriben/leen en Bogotá sin CONVERT_TIMEZONE.
+                "TIMEZONE": cfg.zona_horaria,
             },
         }
 
@@ -146,8 +139,8 @@ class GestorConexion:
                 try:
                     if not self._conn.is_closed():
                         return self._conn
-                except Exception:  # noqa: BLE001 - conexión en estado indefinido
-                    pass
+                except Exception:
+                    logger.debug("Conexión previa inutilizable; se recrea", exc_info=True)
             self._conn = self.conectar()
             return self._conn
 
@@ -161,6 +154,6 @@ class GestorConexion:
             if self._conn is not None:
                 try:
                     self._conn.close()
-                except Exception:  # noqa: BLE001 - cierre best-effort
-                    pass
+                except Exception:
+                    logger.debug("Cierre de conexión best-effort falló", exc_info=True)
                 self._conn = None

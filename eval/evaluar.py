@@ -19,11 +19,11 @@ import yaml
 RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ / "backend"))
 
-from config import cargar_config  # noqa: E402
-from motores.guardas import validar_sql  # noqa: E402
-from snowflake_.analyst import ClienteAnalyst  # noqa: E402
-from snowflake_.conexion import GestorConexion  # noqa: E402
-from snowflake_.ejecutor import ejecutar_select  # noqa: E402
+from config import cargar_config
+from motores.guardas import validar_sql
+from snowflake_.analyst import ClienteAnalyst
+from snowflake_.conexion import GestorConexion
+from snowflake_.ejecutor import ejecutar_select
 
 
 def _normalizar(filas: list[list]) -> list[tuple]:

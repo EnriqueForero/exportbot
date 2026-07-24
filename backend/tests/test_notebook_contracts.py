@@ -33,7 +33,7 @@ def test_launch_notebook_checks_exportbot_not_legacy_package():
 def test_publish_notebook_uses_uv_for_install_and_current_tree_contract():
     source = _source("Publicar_GitHub.ipynb")
     assert "registro_analitica/__init__.py" not in source
-    assert '"tests"' not in re.search(r"obligatorios = \[.*?\]", source, flags=re.S).group(0)
+    assert '"tests"' not in re.search(r"obligatorios = \[.*?\]", source, flags=re.DOTALL).group(0)
     assert '"backend/tests"' in source
     assert '"{venv}/pip"' not in source
     assert '"-r", req_runtime, "-r", req_dev' in source

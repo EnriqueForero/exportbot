@@ -1,4 +1,89 @@
-# Changelog · ExportBot
+# Changelog
+
+## [2.0.0] — 2026-07-24 · VERSIÓN FINAL
+
+Consolida el ciclo rc1→rc3 en la versión de producción. Resumen ejecutivo:
+- **Telemetría v2** (`DB_EXPORTBOT.TELEMETRY`, estándar GIC): rastro completo
+  pregunta→SQL→**respuesta**, middleware HTTP, descargas ligadas al chat,
+  identidad (`APP_NAME/APP_VERSION/ENVIRONMENT/USER_ID`) en todas las tablas,
+  zona horaria Bogotá a nivel de sesión, bug de versión vacía corregido con test.
+- **Credenciales a prueba de incidentes**: cargador de llave tolerante
+  (PEM-b64 / DER-b64 / PEM crudo), fail-fast al arranque, y `/api/salud` con
+  **identidad efectiva** (cuenta, usuario) + huella de llave(s) — todo 401 se
+  diagnostica en un JSON.
+- **Exactitud**: `claude-sonnet-4-6` por defecto (verificado en la cuenta),
+  literales y sample_values al casing real de la BD, 12 preguntas doradas.
+- **Corregido (bloqueaba el publicador de GitHub)**: `pyproject.toml` había
+  quedado en 2.0.0b2 mientras `VERSION` avanzaba — versiones ahora unificadas y
+  vigiladas por `test_version_coherente.py`.
+- **Documentación final**: README reescrito, RUNBOOK con los 8 incidentes reales
+  de la puesta en marcha, `docs/guias/` (manual 7 fases, Colab, Railway,
+  playbook replicable del patrón).
+
+**Condición de go-live**: eval ≥ 90 % + checklist Fase 7 del manual.
+
+*Build 2 (mismo 2.0.0, pre-publicación):* el gate del publicador detectó 32
+hallazgos de lint en `eval/` y `scripts/` (alcance que la verificación local no
+cubría) más deriva de versión de ruff (`>=0.6` sin techo). Corregidos con
+criterio — hora Bogotá explícita en exportadores, fail-open con rastro en debug,
+excepciones concretas en tests, `check=` explícito en subprocess — y **ruff
+pinneado a 0.16.0**: el veredicto del gate ya no cambia con cada release de la
+herramienta.
+
+
+## [2.0.0rc3] — 2026-07-24
+
+### Identidad visible (incidente "JWT token is invalid" con huella coincidente)
+- `/api/salud` expone ahora `cuenta` y `usuario_snowflake` — la identidad EFECTIVA con
+  la que la app firma el JWT. Un 401 con llave correcta significa identidad equivocada;
+  ahora se diagnostica mirando un JSON, no adivinando qué hay en los Secrets.
+- Si existen ambas llaves, `llave_rsa_2` reporta también la legibilidad de la segunda
+  (recordatorio: su pública debe estar en `RSA_PUBLIC_KEY_2` o el failover a esa llave
+  producirá 401).
+
+
+## [2.0.0rc2] — 2026-07-23
+
+### Robustez de credenciales (incidente MalformedFraming)
+- Nuevo `snowflake_/llaves.py`: cargador tolerante de la llave privada que acepta
+  los TRES formatos reales — PEM-b64 (documentado), **DER-b64** (cuerpo del PEM sin
+  cabeceras, el del incidente) y PEM crudo — con mensajes de error en español que
+  nombran el formato detectado y la corrección exacta. Driver y JWT de Analyst usan
+  la MISMA lógica: un secreto válido lo es en todas las capas.
+- **Fail-fast al arrancar**: la app intenta leer la llave, publica el veredicto y la
+  huella en `/api/salud` (`"llave_rsa": "legible (SHA256:…)"` / `"ILEGIBLE: …"`) y,
+  con `ARRANQUE_ESTRICTO=true`, aborta — un secreto roto grita al desplegar, no en
+  la primera consulta del usuario.
+- La firma del JWT ahora reporta llave ilegible como `ErrorAnalyst` tipificado
+  (mensaje claro en el chat) en lugar del genérico "Error interno".
+
+
+## [2.0.0rc1] — 2026-07-23
+
+### Telemetría v2 (DB_EXPORTBOT.TELEMETRY — estándar GIC 2026-05-13)
+- `CHAT_LOG` guarda ahora el rastro completo: **RESPUESTA final**, `RESPUESTA_DEGRADADA`,
+  `LATENCIA_REDACCION_MS`, `USER_ID`, `ENVIRONMENT`, `APP_NAME` y `DETALLES` (VARIANT).
+- `EVENTOS_APP` → **`UI_EVENT`** con identidad completa; **corrige el bug** que insertaba
+  siempre `''` como versión de la app.
+- Nuevo **`DOWNLOAD_EVENT`**: cada descarga (excel/pptx) queda ligada a su `CHAT_LOG_ID`.
+- Nuevo middleware **`AuditoriaHTTP`** → `EVENT_LOG`: método, endpoint, status, duración,
+  sesión, usuario, IP y user-agent de cada request `/api/*` (fail-open).
+- `FEEDBACK` acepta `USER_ID`/`SESSION_ID`; sesión Snowflake con `TIMEZONE=America/Bogota`
+  (adiós a los parches `CONVERT_TIMEZONE`).
+- DDL canónico: `sql/02_telemetria_v2_ddl.sql` (v1 archivada en `sql/legado/`).
+
+### Modelos y semántica
+- Modelo de redacción por defecto: **`claude-sonnet-4-6`** (verificado con
+  `SNOWFLAKE.CORTEX.COMPLETE` en la cuenta el 2026-07-23; `mistral-large2` queda como opción).
+- Literales y `sample_values` corregidos al **casing real de la BD (MAYÚSCULAS)** en
+  `modelo_exportaciones_analyst.yaml` y `preguntas_doradas.yaml` (evita evaluaciones
+  con 0 filas). Snapshot de la vista desplegada: `semantic/sv_exportaciones_desplegada_2026-07-23.yaml`.
+
+### API
+- `user_id` opcional en `/api/chat`, `/api/exportar/*`, `/api/track/*` (body o cabecera
+  `X-User-Id`); contrato OpenAPI regenerado. `/api/salud` expone `entorno`.
+
+ · ExportBot
 ### A06 — Playwright reproducible en Colab
 
 - El publicador instala y valida automáticamente Chromium antes del gate E2E.

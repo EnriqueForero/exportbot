@@ -26,6 +26,7 @@ def chat(entrada: PreguntaEntrada, request: Request) -> StreamingResponse:
             historial=entrada.historial,
             proveedor=entrada.proveedor,
             session_id=entrada.session_id,
+            user_id=entrada.user_id or request.headers.get("x-user-id", ""),
         ):
             yield "data: " + json.dumps(evento, ensure_ascii=False, default=str) + "\n\n"
 
