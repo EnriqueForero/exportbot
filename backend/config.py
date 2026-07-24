@@ -69,8 +69,15 @@ class Config:
     )  # ej. @DB.SCH.STAGE/modelo.yaml
 
     # ── Redacción de respuestas ─────────────────────────────────────
-    cortex_modelo: str = field(default_factory=lambda: _env("SF_CORTEX_MODELO", "mistral-large2"))
+    # Verificado en la cuenta el 2026-07-23: claude-sonnet-4-6 responde vía
+    # SNOWFLAKE.CORTEX.COMPLETE con CORTEX_ENABLED_CROSS_REGION='ANY_REGION'.
+    cortex_modelo: str = field(default_factory=lambda: _env("SF_CORTEX_MODELO", "claude-sonnet-4-6"))
     proveedor_defecto: str = field(default_factory=lambda: _env("PROVEEDOR_REDACCION", "cortex"))
+
+    # ── Identidad de la app (telemetría estándar GIC 2026-05-13) ────
+    app_nombre: str = field(default_factory=lambda: _env("APP_NOMBRE", "exportbot"))
+    entorno: str = field(default_factory=lambda: _env("ENTORNO_APP", "dev"))  # railway | colab | dev
+    zona_horaria: str = field(default_factory=lambda: _env("SF_TIMEZONE", "America/Bogota"))
 
     # ── Telemetría / auditoría ──────────────────────────────────────
     telemetria_activa: bool = field(default_factory=lambda: _env_bool("TELEMETRIA_ACTIVA", True))
@@ -146,7 +153,7 @@ class Config:
         if not (self.semantic_view or self.semantic_model_file):
             problemas.append("Defina SF_SEMANTIC_VIEW o SF_SEMANTIC_MODEL_FILE.")
         if self.telemetria_activa and not self.esquema_telemetria:
-            problemas.append("TELEMETRIA_ACTIVA=true exige SF_ESQUEMA_TELEMETRIA (ej. BD_EXPORTBOT.TELEMETRIA).")
+            problemas.append("TELEMETRIA_ACTIVA=true exige SF_ESQUEMA_TELEMETRIA (ej. DB_EXPORTBOT.TELEMETRY).")
         return problemas
 
 

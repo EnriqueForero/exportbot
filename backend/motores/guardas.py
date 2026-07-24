@@ -52,7 +52,7 @@ def validar_sql(sql_cruda: str, esquemas_permitidos: frozenset[str], max_filas: 
     if ";" in sql:
         return SqlValidada(ok=False, motivo="Se rechazan sentencias múltiples (';').")
     inicio = sql.lstrip("( \n\t").upper()
-    if not (inicio.startswith("SELECT") or inicio.startswith("WITH")):
+    if not inicio.startswith(("SELECT", "WITH")):
         return SqlValidada(ok=False, motivo="Solo se permiten sentencias SELECT/WITH.")
     m = _PROHIBIDAS.search(sql)
     if m:

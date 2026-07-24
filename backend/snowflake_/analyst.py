@@ -10,8 +10,6 @@ Referencia: https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-ana
 
 from __future__ import annotations
 
-import base64
-import hashlib
 import logging
 import time
 from dataclasses import dataclass, field
@@ -57,20 +55,19 @@ class GeneradorJWT:
 
     def _firmar(self) -> str:
         import jwt as pyjwt
-        from cryptography.hazmat.primitives import serialization
+
+        from snowflake_.llaves import cargar_llave_privada, huella_publica
 
         cfg = self._cfg
         b64 = cfg.sf_private_key_b64_1 or cfg.sf_private_key_b64_2
         frase = cfg.sf_key_passphrase_1 if cfg.sf_private_key_b64_1 else cfg.sf_key_passphrase_2
         if not b64:
             raise ErrorAnalyst("No hay llave privada para firmar el JWT (SF_PRIVATE_KEY_B64_*).")
-        pem = base64.b64decode(b64)
-        llave = serialization.load_pem_private_key(pem, password=frase.encode() or None)
-        publica_der = llave.public_key().public_bytes(
-            encoding=serialization.Encoding.DER,
-            format=serialization.PublicFormat.SubjectPublicKeyInfo,
-        )
-        huella = "SHA256:" + base64.b64encode(hashlib.sha256(publica_der).digest()).decode()
+        try:
+            llave = cargar_llave_privada(b64, frase)
+        except ValueError as exc:
+            raise ErrorAnalyst(f"Llave privada ilegible: {exc}") from exc
+        huella = huella_publica(llave)
         calificado = f"{_cuenta_para_jwt(cfg.sf_account)}.{cfg.sf_user.upper()}"
         ahora = int(time.time())
         payload = {

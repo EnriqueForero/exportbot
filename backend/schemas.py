@@ -14,6 +14,7 @@ class PreguntaEntrada(BaseModel):
     historial: list[dict[str, Any]] = Field(default_factory=list)
     proveedor: str = ""
     session_id: str = Field(default="", max_length=64)
+    user_id: str = Field(default="", max_length=200)
 
 
 class ExportEntrada(BaseModel):
@@ -26,6 +27,7 @@ class ExportEntrada(BaseModel):
     filas: list[list[Any]] = Field(default_factory=list)
     chat_id: str = ""
     session_id: str = ""
+    user_id: str = Field(default="", max_length=200)
 
 
 class FeedbackEntrada(BaseModel):
@@ -35,6 +37,7 @@ class FeedbackEntrada(BaseModel):
     util: bool
     comentario: str = Field(default="", max_length=1000)
     session_id: str = ""
+    user_id: str = Field(default="", max_length=200)
 
 
 class EventoEntrada(BaseModel):
@@ -43,3 +46,7 @@ class EventoEntrada(BaseModel):
     evento: str = Field(..., min_length=1, max_length=64)
     detalles: dict[str, Any] = Field(default_factory=dict)
     session_id: str = ""
+    user_id: str = Field(default="", max_length=200)
+    detalle: str = Field(default="", max_length=200)
+    objetivo: str = Field(default="", max_length=200)
+    pagina: str = Field(default="", max_length=50)

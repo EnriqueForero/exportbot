@@ -65,6 +65,7 @@ def _run(
     print("  $", shown, flush=True)
     return subprocess.run(
         command,
+        check=False,
         text=True,
         capture_output=True,
         env=env,

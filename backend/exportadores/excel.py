@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import io
 from datetime import datetime
+from zoneinfo import ZoneInfo
+
+_TZ_BOGOTA = ZoneInfo("America/Bogota")
 from typing import Any
 
 from openpyxl import Workbook
@@ -30,7 +33,7 @@ def construir(pregunta: str, texto: str, sql: str, columnas: list[str], filas: l
 
     ws["A1"] = "ExportBot 2.0 · ProColombia — Cifras de exportaciones de bienes"
     ws["A1"].font = titulo
-    ws["A2"] = f"Generado: {datetime.now():%Y-%m-%d %H:%M} · Versión app: {VERSION_APP}"
+    ws["A2"] = f"Generado: {datetime.now(_TZ_BOGOTA):%Y-%m-%d %H:%M} · Versión app: {VERSION_APP}"
     ws["A3"] = "Pregunta:"
     ws["A3"].font = etiqueta
     ws["B3"] = pregunta

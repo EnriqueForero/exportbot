@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import io
 from datetime import datetime
+from zoneinfo import ZoneInfo
+
+_TZ_BOGOTA = ZoneInfo("America/Bogota")
 from typing import Any
 
 from pptx import Presentation
@@ -44,7 +47,7 @@ def _lamina_titulo(prs: Presentation, pregunta: str, texto: str) -> None:
     p2.text = texto
     p2.font.size = Pt(14)
     p3 = t.add_paragraph()
-    p3.text = f"Generado: {datetime.now():%Y-%m-%d %H:%M} · Versión: {VERSION_APP}"
+    p3.text = f"Generado: {datetime.now(_TZ_BOGOTA):%Y-%m-%d %H:%M} · Versión: {VERSION_APP}"
     p3.font.size = Pt(10)
 
 

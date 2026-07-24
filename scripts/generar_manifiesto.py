@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
@@ -55,7 +55,7 @@ def main() -> None:
     manifiesto = {
         "proyecto": "exportbot",
         "version": (RAIZ / "VERSION").read_text(encoding="utf-8").strip(),
-        "generado_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "generado_utc": datetime.now(UTC).isoformat(timespec="seconds"),
         "n_archivos": len(archivos),
         "archivos": archivos,
     }

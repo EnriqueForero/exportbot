@@ -10,8 +10,8 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-import main as main_mod  # noqa: E402
-from scripts.actualizar_contrato_openapi import build_snapshot  # noqa: E402
+import main as main_mod
+from scripts.actualizar_contrato_openapi import build_snapshot
 
 CONTRACT_PATH = ROOT / "contracts" / "exportbot_v2_contract.json"
 
